@@ -1,3 +1,5 @@
+import ApisSatelital from '../Shared/ApisSatelital';
+import ApisIA from '../Shared/ApisIA';
 import { useState } from 'react';
 import './Dashboard.css';
 import Inicio from './pages/inicio';
@@ -25,13 +27,15 @@ const USUARIOS: Record<string, { pass: string; nombre: string; role: Role }> = {
 
 /* ── MENU ── */
 const MENU_ADMIN = [
-  { id: 'inicio',    icon: '◈', label: 'Inicio'     },
-  { id: 'tareas',    icon: '✓', label: 'Tareas'     },
-  { id: 'cultivos',  icon: '🌱', label: 'Cultivos'  },
-  { id: 'lotes',     icon: '▦', label: 'Lotes'      },
-  { id: 'palmas',    icon: '🌴', label: 'Palmas'    },
-  { id: 'empleados', icon: '👥', label: 'Empleados' },
-  { id: 'graficas',  icon: '📊', label: 'Gráficas'  },
+  { id: 'inicio',    icon: '◈',  label: 'Inicio'       },
+  { id: 'tareas',    icon: '✓',  label: 'Tareas'       },
+  { id: 'cultivos',  icon: '🌱', label: 'Cultivos'     },
+  { id: 'lotes',     icon: '▦',  label: 'Lotes'        },
+  { id: 'palmas',    icon: '🌴', label: 'Palmas'       },
+  { id: 'empleados', icon: '👥', label: 'Empleados'    },
+  { id: 'graficas',  icon: '📊', label: 'Gráficas'     },
+  { id: 'satelital', icon: '🛰️', label: 'Satelital'    },
+  { id: 'deteccion', icon: '🤖', label: 'Detección IA' },
 ];
 
 /* ── LOGIN ── */
@@ -116,19 +120,20 @@ export default function DashboardApp() {
     return <div className="dash-root"><Login onLogin={setUsuario} /></div>;
   }
 
-  const renderPage = () => {
-    switch (pagina) {
-      case 'inicio':    return <Inicio />;
-      case 'tareas':    return <Tareas />;
-      case 'cultivos':  return <Cultivos />;
-      case 'lotes':     return <Lotes />;
-      case 'palmas':    return <Palmas />;
-      case 'empleados': return <Empleados />;
-      case 'graficas':  return <Graficas />;
-      default:          return <Inicio />;
-    }
-  };
-
+ const renderPage = () => {
+  switch (pagina) {
+    case 'inicio':    return <Inicio />;
+    case 'tareas':    return <Tareas />;
+    case 'cultivos':  return <Cultivos />;
+    case 'lotes':     return <Lotes />;
+    case 'palmas':    return <Palmas />;
+    case 'empleados': return <Empleados />;
+    case 'graficas':  return <Graficas />;
+    case 'satelital': return <ApisSatelital />;
+    case 'deteccion': return <ApisIA />;
+    default:          return <Inicio />;
+  }
+};
   return (
     <div className="dash-root">
       {/* TOPBAR */}
