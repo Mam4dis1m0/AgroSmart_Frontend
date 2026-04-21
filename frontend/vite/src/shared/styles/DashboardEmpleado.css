@@ -1,0 +1,296 @@
+/* ── EMPLEADO OVERRIDES ── */
+
+.emp-login-screen {
+  background: radial-gradient(ellipse at 30% 50%, #0b1e35 0%, #041224 100%);
+}
+
+.emp-login-box {
+  border-color: rgba(80, 160, 255, 0.25);
+}
+
+.emp-login-btn {
+  background: #2a6dd9 !important;
+}
+.emp-login-btn:hover {
+  background: #d88b10 !important;
+}
+
+.emp-badge {
+  background: rgba(40, 100, 220, 0.25) !important;
+  border-color: rgba(216,139,16,0.32) !important;
+  color: #80b4ff !important;
+}
+
+.topbar-lote {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-left: 4px;
+}
+
+.emp-avatar-color {
+  border-color: #d88b10 !important;
+  background: #1a3a80 !important;
+}
+
+.emp-sidebar .nav-item.active {
+  background: rgba(216,139,16,0.14) !important;
+  color: #80b4ff !important;
+}
+
+/* ── PROGRESO ── */
+.progress-bar-wrap {
+  background: rgba(255,255,255,0.08);
+  border-radius: 20px;
+  height: 10px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 20px;
+  background: linear-gradient(90deg, #3d7a00, #f3c26a);
+  transition: width 0.6s ease;
+}
+
+.progress-bar-fill.blue {
+  background: linear-gradient(90deg, #4a7d0e, #d88b10);
+}
+
+.progress-bar-fill.yellow {
+  background: linear-gradient(90deg, #a07800, #f0c000);
+}
+
+/* ── TAREA CARD ── */
+.tarea-card {
+  background: var(--g2);
+  border: 1px solid rgba(216,139,16,0.16);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+
+.tarea-card:hover {
+  border-color: rgba(216,139,16,0.35);
+}
+
+.tarea-card.completada {
+  border-color: rgba(216,139,16,0.35);
+  opacity: 0.75;
+}
+
+.tarea-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+
+.tarea-title {
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+}
+
+.tarea-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.tarea-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.tarea-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.estado-select {
+  background: rgba(22, 54, 105, 0.8);
+  border: 1px solid rgba(216,139,16,0.22);
+  color: white;
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  outline: none;
+}
+
+.obs-toggle {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.55);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.obs-toggle:hover {
+  border-color: rgba(255,255,255,0.35);
+  color: white;
+}
+
+.obs-area {
+  margin-top: 12px;
+  animation: fadeIn 0.2s ease;
+}
+
+.obs-area textarea {
+  width: 100%;
+  background: rgba(22, 54, 105, 0.7);
+  border: 1px solid rgba(216, 139, 16, 0.2);
+  border-radius: 10px;
+  color: white;
+  font-size: 13px;
+  font-family: 'DM Sans', sans-serif;
+  padding: 10px 14px;
+  resize: none;
+  height: 70px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.obs-area textarea:focus {
+  border-color: rgba(216,139,16,0.45);
+}
+
+.obs-area textarea::placeholder {
+  color: rgba(255,255,255,0.25);
+}
+
+.obs-save {
+  background: var(--gl);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.obs-save:hover { background: var(--glim); }
+
+.obs-saved {
+  font-size: 12px;
+  color: var(--glim);
+  margin-top: 8px;
+}
+
+/* ── ACTIVIDAD ── */
+.actividad-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.act-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(106,170,0,0.08);
+}
+
+.act-item:last-child { border-bottom: none; }
+
+.act-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.act-dot.green  { background: var(--accent-orange); }
+.act-dot.blue   { background: var(--accent-amber-soft); }
+.act-dot.yellow { background: var(--yw); }
+.act-dot.red    { background: #ff8080; }
+
+.act-text { font-size: 13px; color: rgba(255,255,255,0.8); flex: 1; line-height: 1.5; }
+.act-time { font-size: 11px; color: rgba(255,255,255,0.35); white-space: nowrap; }
+
+/* ── KPI CARDS ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background: var(--g2);
+  border: 1px solid rgba(216,139,16,0.16);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.kpi-icon { font-size: 26px; margin-bottom: 10px; }
+.kpi-label { font-size: 12px; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.kpi-val { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--glim); line-height: 1; }
+.kpi-sub { font-size: 12px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+/* ── LOTES VISTA ── */
+.lote-readonly-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.lote-card-ro {
+  background: var(--g2);
+  border: 1px solid rgba(106,170,0,0.15);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.lote-card-ro:hover {
+  border-color: rgba(106,170,0,0.35);
+}
+
+.lote-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: var(--glim);
+  margin-bottom: 6px;
+}
+
+.lote-info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 4px;
+}
+
+.lote-info-val {
+  color: rgba(255,255,255,0.85);
+  font-weight: 500;
+}
+
+.readonly-note {
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  text-align: center;
+  margin-top: 20px;
+  font-style: italic;
+}
