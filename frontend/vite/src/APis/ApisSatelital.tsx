@@ -220,7 +220,13 @@ function pinLote(color: string, label: string) {
 }
 
 // ─── FLY TO ──────────────────────────────────────────────────────────────────
-function FlyTo({ pos, zoom = 14 }: { pos: [number, number] | null; zoom?: number }) {
+function FlyTo({
+  pos,
+  zoom = 14,
+}: {
+  pos: [number, number] | null;
+  zoom?: number;
+}) {
   const map = useMap();
   useEffect(() => {
     if (pos) map.flyTo(pos, zoom, { duration: 1.1 });
@@ -1162,14 +1168,19 @@ function BuscadorCoordenadas() {
   const [visible, setVisible] = useState(false);
 
   const ir = () => {
-    const partes = input.split(",").map(s => parseFloat(s.trim()));
+    const partes = input.split(",").map((s) => parseFloat(s.trim()));
     if (partes.length === 2 && !isNaN(partes[0]) && !isNaN(partes[1])) {
       map.flyTo([partes[0], partes[1]], 14, { duration: 1.2 });
     } else {
-      fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(input)}&format=json&limit=1`)
-        .then(r => r.json())
-        .then(data => {
-          if (data[0]) map.flyTo([parseFloat(data[0].lat), parseFloat(data[0].lon)], 14, { duration: 1.2 });
+      fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(input)}&format=json&limit=1`,
+      )
+        .then((r) => r.json())
+        .then((data) => {
+          if (data[0])
+            map.flyTo([parseFloat(data[0].lat), parseFloat(data[0].lon)], 14, {
+              duration: 1.2,
+            });
         });
     }
     setInput("");
@@ -1177,29 +1188,51 @@ function BuscadorCoordenadas() {
   };
 
   return (
-    <div style={{ position: "absolute", top: 14, right: 14, zIndex: 1000, display: "flex", gap: 6, alignItems: "center" }}>
+    <div
+      style={{
+        position: "absolute",
+        top: 14,
+        right: 14,
+        zIndex: 1000,
+        display: "flex",
+        gap: 6,
+        alignItems: "center",
+      }}
+    >
       {visible && (
         <input
           autoFocus
           value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => e.key === "Enter" && ir()}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && ir()}
           placeholder="Lat, Lng  o  nombre del lugar"
           style={{
-            padding: "8px 12px", borderRadius: 10, border: "none",
-            background: "rgba(13,17,23,0.92)", color: "white",
-            fontSize: 12, width: 240, outline: "none",
-            backdropFilter: "blur(10px)", boxShadow: "0 3px 14px rgba(0,0,0,0.4)"
+            padding: "8px 12px",
+            borderRadius: 10,
+            border: "none",
+            background: "rgba(13,17,23,0.92)",
+            color: "white",
+            fontSize: 12,
+            width: 240,
+            outline: "none",
+            backdropFilter: "blur(10px)",
+            boxShadow: "0 3px 14px rgba(0,0,0,0.4)",
           }}
         />
       )}
       <button
-        onClick={() => setVisible(v => !v)}
+        onClick={() => setVisible((v) => !v)}
         style={{
-          width: 36, height: 36, borderRadius: 10, border: "none",
-          background: "rgba(13,17,23,0.88)", color: "white",
-          cursor: "pointer", fontSize: 16,
-          backdropFilter: "blur(10px)", boxShadow: "0 2px 10px rgba(0,0,0,0.3)"
+          width: 36,
+          height: 36,
+          borderRadius: 10,
+          border: "none",
+          background: "rgba(13,17,23,0.88)",
+          color: "white",
+          cursor: "pointer",
+          fontSize: 16,
+          backdropFilter: "blur(10px)",
+          boxShadow: "0 2px 10px rgba(0,0,0,0.3)",
         }}
       >
         🔍
@@ -1216,18 +1249,29 @@ function CoordenadasCursor() {
   useEffect(() => {
     const handler = (e: L.LeafletMouseEvent) => setPos(e.latlng);
     map.on("mousemove", handler);
-    return () => { map.off("mousemove", handler); };
+    return () => {
+      map.off("mousemove", handler);
+    };
   }, [map]);
 
   if (!pos) return null;
   return (
-    <div style={{
-      position: "absolute", bottom: 8, left: "50%",
-      transform: "translateX(-50%)", zIndex: 1000,
-      background: "rgba(13,17,23,0.78)", color: "rgba(255,255,255,0.6)",
-      borderRadius: 8, padding: "4px 12px", fontSize: 11,
-      pointerEvents: "none", backdropFilter: "blur(6px)"
-    }}>
+    <div
+      style={{
+        position: "absolute",
+        bottom: 8,
+        left: "50%",
+        transform: "translateX(-50%)",
+        zIndex: 1000,
+        background: "rgba(13,17,23,0.78)",
+        color: "rgba(255,255,255,0.6)",
+        borderRadius: 8,
+        padding: "4px 12px",
+        fontSize: 11,
+        pointerEvents: "none",
+        backdropFilter: "blur(6px)",
+      }}
+    >
       {pos.lat.toFixed(5)}, {pos.lng.toFixed(5)}
     </div>
   );
@@ -1388,8 +1432,7 @@ export default function ApisSatelital() {
           />
 
           <FlyTo pos={flyPos} zoom={flyZoom} />
-          <BuscadorCoordenadas 
-          />
+          <BuscadorCoordenadas />
           <CoordenadasCursor />
 
           {lotes.map((lote) => {
