@@ -90,11 +90,17 @@ export default function MisTareas({ usuario }: { usuario: UsuarioEmp }) {
             key={f}
             onClick={() => setFiltro(f)}
             style={{
-              background: filtro === f ? 'rgba(106,170,0,0.25)' : 'rgba(255,255,255,0.05)',
-              border: `1px solid ${filtro === f ? 'rgba(106,170,0,0.5)' : 'rgba(255,255,255,0.1)'}`,
-              color: filtro === f ? '#90cc00' : 'rgba(255,255,255,0.5)',
-              borderRadius: 20, padding: '5px 14px', fontSize: 12,
-              fontFamily: 'DM Sans, sans-serif', cursor: 'pointer',
+              padding: '5px 14px',
+              borderRadius: 20,
+              border: filtro === f ? 'none' : '1.5px solid rgba(100, 70, 40, 0.18)',
+              background: filtro === f ? 'var(--g3)' : 'none',
+              color: filtro === f ? '#fff' : 'var(--text-muted)',
+              fontSize: 12,
+              fontFamily: 'DM Sans, sans-serif',
+              cursor: 'pointer',
+              fontWeight: 700,
+              boxShadow: filtro === f ? '0 2px 8px rgba(46, 109, 164, 0.25)' : 'none',
+              transition: 'all 0.2s',
             }}
           >
             {f === 'todas' ? 'Todas' : ESTADO_LABELS[f]}

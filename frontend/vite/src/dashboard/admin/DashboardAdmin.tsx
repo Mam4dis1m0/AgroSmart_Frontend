@@ -7,7 +7,8 @@ import Lotes from '../../lotes/pages/LotesPage';
 import Palmas from '../../palmas/pages/PalmasPage';
 import Empleados from '../../empleados/pages/EmpleadosPage';
 import Graficas from './pages/GraficasPage';
-import ApisSatelital from '../../APis/ApisSatelital';
+import Insumos from '../../Insumos/InsumosPage';
+// ❌ Eliminado: import ApisSatelital
 
 export type Role = 'admin' | 'empleado';
 
@@ -25,7 +26,8 @@ const MENU_ADMIN = [
   { id: 'palmas',    icon: '🌴', label: 'Palmas'    },
   { id: 'empleados', icon: '👥', label: 'Empleados' },
   { id: 'graficas',  icon: '📊', label: 'Gráficas'  },
-  { id: 'satelital', icon: '🛰️', label: 'Satelital' },
+  { id: 'insumos', icon: '🧪', label: 'Insumos' },
+  // ❌ Eliminado: satelital
 ];
 
 function Sidebar({ activePage, onNav }: { activePage: string; onNav: (id: string) => void }) {
@@ -65,7 +67,8 @@ export default function DashboardApp({
       case 'palmas':    return <Palmas />;
       case 'empleados': return <Empleados />;
       case 'graficas':  return <Graficas />;
-      case 'satelital': return <ApisSatelital />;
+      case 'insumos': return <Insumos />;
+      // ❌ Eliminado: case 'satelital'
       default:          return <Inicio />;
     }
   };

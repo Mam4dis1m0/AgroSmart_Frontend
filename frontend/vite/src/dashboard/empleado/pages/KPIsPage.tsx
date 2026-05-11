@@ -39,12 +39,12 @@ export default function KPIs({ usuario }: { usuario: UsuarioEmp }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           {comparativa.map(c => (
             <div key={c.label}>
-              <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.7)', marginBottom: 10 }}>{c.label}</div>
+              <div style={{ fontSize: 13, color: 'black', marginBottom: 10 }}>{c.label}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                    <span style={{ color: '#90cc00' }}>Tú</span>
-                    <span style={{ color: '#90cc00' }}>{c.tuVal}%</span>
+                    <span style={{ color: 'black' }}>Tú</span>
+                    <span style={{ color: 'black' }}>{c.tuVal}%</span>
                   </div>
                   <div className="progress-bar-wrap">
                     <div className="progress-bar-fill" style={{ width: `${c.tuVal}%` }} />
@@ -52,8 +52,8 @@ export default function KPIs({ usuario }: { usuario: UsuarioEmp }) {
                 </div>
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                    <span style={{ color: 'rgba(255,255,255,0.4)' }}>Equipo</span>
-                    <span style={{ color: 'rgba(255,255,255,0.4)' }}>{c.equipoVal}%</span>
+                    <span style={{ color: 'black' }}>Equipo</span>
+                    <span style={{ color: 'black' }}>{c.equipoVal}%</span>
                   </div>
                   <div className="progress-bar-wrap">
                     <div className="progress-bar-fill blue" style={{ width: `${c.equipoVal}%`, opacity: 0.5 }} />

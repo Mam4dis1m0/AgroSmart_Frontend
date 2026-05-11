@@ -112,7 +112,7 @@ const LS = {
     try { const v = localStorage.getItem(key); return v ? JSON.parse(v) as T : fallback; } catch { return fallback; }
   },
   set: (key: string, val: unknown): void => {
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch (error) { console.warn('Error saving to localStorage:', error); }
   },
 };
 
@@ -206,10 +206,13 @@ function FlyTo({ pos, zoom = 14 }: { pos: [number,number] | null; zoom?: number 
 
 // ─── SPARKLINE ───────────────────────────────────────────────────────────────
 function Spark({ base, color }: { base: number; color: string }) {
-  const pts = useMemo(() =>
-    Array.from({length:8}, (_: unknown, i: number) => Math.min(0.92, Math.max(0.35,
-      base + (Math.random()-0.5)*0.1 - (7-i)*0.006
-    ))), [base]);
+  const pts = useMemo(() => {
+    const generatePoints = () =>
+      Array.from({length:8}, (_: unknown, i: number) => Math.min(0.92, Math.max(0.35,
+        base + (Math.random()-0.5)*0.1 - (7-i)*0.006
+      )));
+    return generatePoints();
+  }, [base]);
   const W=200, H=44, P=3;
   const mn=Math.min(...pts)-0.02, mx=Math.max(...pts)+0.02;
   const xs = (i: number) => P + (i/(pts.length-1))*(W-P*2);
@@ -267,7 +270,7 @@ function ModalNota({ loteId, onClose, onSave }: { loteId: string; onClose: () =>
     <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.7)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
       <div style={{background:"#161b22",borderRadius:16,padding:24,width:340,border:"1px solid " + THEME.border}} onClick={e=>e.stopPropagation()}>
         <div style={{fontWeight:700,color:"white",marginBottom:16}}>Nueva nota — {loteId}</div>
-        <select value={tipo} onChange={e=>setTipo(e.target.value)} style={{width:"100%",marginBottom:10,padding:"8px 10px",borderRadius:8,background:"#0d1117",color:"white",border:"1px solid " + THEME.border,fontSize:13}}>
+        <select value={tipo} onChange={e=>setTipo(e.target.value)} style={{width:"100%",marginBottom:10,padding:"8px 10px",borderRadius:8,background:"#0d1117",color:"black",border:"1px solid " + THEME.border,fontSize:13}}>
           <option value="observacion">Observación</option>
           <option value="fumigacion">Fumigación</option>
           <option value="fertilizacion">Fertilización</option>
@@ -275,7 +278,7 @@ function ModalNota({ loteId, onClose, onSave }: { loteId: string; onClose: () =>
           <option value="plaga">Plaga detectada</option>
         </select>
         <textarea value={texto} onChange={e=>setTexto(e.target.value)} placeholder="Descripción detallada..." rows={4}
-          style={{width:"100%",padding:"8px 10px",borderRadius:8,background:"#0d1117",color:"white",border:"1px solid " + THEME.border,fontSize:13,resize:"vertical",boxSizing:"border-box"}}/>
+          style={{width:"100%",padding:"8px 10px",borderRadius:8,background:"#0d1117",color:"black",border:"1px solid " + THEME.border,fontSize:13,resize:"vertical",boxSizing:"border-box"}}/>
         <div style={{display:"flex",gap:8,marginTop:12}}>
           <button onClick={onClose} style={{flex:1,padding:"9px",borderRadius:8,border:"1px solid " + THEME.border,background:"transparent",color:"white",cursor:"pointer"}}>Cancelar</button>
           <button onClick={()=>{if(texto.trim()){onSave({tipo,texto:texto.trim(),fecha:fmt(hoy()),id:Date.now()});onClose();}}}
@@ -308,7 +311,7 @@ function ModalLote({ lote, onClose, onSave }: { lote: Lote | null; onClose: () =
           <div key={k} style={{marginBottom:10}}>
             <div style={{fontSize:11,color:THEME.muted,marginBottom:3}}>{label}</div>
             <input type={type} value={form[k] as string | number} onChange={e=>f(k, type==="number" ? +e.target.value : e.target.value)}
-              style={{width:"100%",padding:"8px 10px",borderRadius:8,background:"#0d1117",color:"white",border:"1px solid " + THEME.border,fontSize:13,boxSizing:"border-box"}}/>
+              style={{width:"100%",padding:"8px 10px",borderRadius:8,background:"#0d1117",color:"black",border:"1px solid " + THEME.border,fontSize:13,boxSizing:"border-box"}}/>
           </div>
         ))}
         <div style={{display:"flex",gap:8,marginTop:12}}>
@@ -346,6 +349,9 @@ function DibujarPoligono({ activo, onFin }: { activo: boolean; onFin: (coords: [
 // ─── COMPARAR LOTES ──────────────────────────────────────────────────────────
 function ComparadorLotes({ lotes, onClose }: { lotes: Lote[]; onClose: () => void }) {
   const con = lotes.filter(l => l.data);
+  const [a, setA] = useState(con.length > 0 ? con[0].id : '');
+  const [b, setB] = useState(con.length > 1 ? con[1].id : '');
+
   if (con.length < 2) return (
     <div style={{position:"fixed",inset:0,zIndex:9999,background:"rgba(0,0,0,0.7)",display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
       <div style={{background:"#161b22",borderRadius:16,padding:24,width:320,border:"1px solid " + THEME.border,textAlign:"center"}}>
@@ -354,8 +360,6 @@ function ComparadorLotes({ lotes, onClose }: { lotes: Lote[]; onClose: () => voi
       </div>
     </div>
   );
-  const [a, setA] = useState(con[0].id);
-  const [b, setB] = useState(con[1].id);
   const lA = con.find(l=>l.id===a)!;
   const lB = con.find(l=>l.id===b)!;
   const metricas: { label: string; ka: keyof LoteData; fmt: (v: number) => string; mejor: "max"|"min" }[] = [
@@ -376,7 +380,7 @@ function ComparadorLotes({ lotes, onClose }: { lotes: Lote[]; onClose: () => voi
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
           {([[a,setA],[b,setB]] as [string, (v: string) => void][]).map(([val,set],idx)=>(
             <select key={idx} value={val} onChange={e=>set(e.target.value)}
-              style={{padding:"8px 10px",borderRadius:8,background:"#0d1117",color:"white",border:"1px solid " + THEME.border,fontSize:13}}>
+              style={{padding:"8px 10px",borderRadius:8,background:"#0d1117",color:"black",border:"1px solid " + THEME.border,fontSize:13}}>
               {con.map(l=><option key={l.id} value={l.id}>{l.nombre}</option>)}
             </select>
           ))}
@@ -416,23 +420,29 @@ function Panel({ lote, onClose, onEditarLote, onEliminarLote }: {
   const meta = d ? estadoMeta(d.estado) : null;
   const [tab, setTab] = useState("datos");
   const [forecast, setForecast] = useState<ForecastData | null>(null);
-  const [notas, setNotas] = useState<Nota[]>(() => LS.get<Nota[]>(`notas_${lote.id}`, []));
   const [showNota, setShowNota] = useState(false);
+  const [notasKey, setNotasKey] = useState(0); // Para forzar recarga de notas
 
+  // Calcular notas dinámicamente
+  const notas = useMemo(() => LS.get<Nota[]>(`notas_${lote.id}`, []), [lote.id, notasKey]);
+
+  // Cargar forecast cuando se cambia a esa pestaña
   useEffect(() => {
-    setNotas(LS.get<Nota[]>(`notas_${lote.id}`, []));
-    if (tab === "forecast" && !forecast) fetchForecast(lote).then(setForecast);
-  }, [lote.id, tab]);
+    if (tab === "forecast" && !forecast) {
+      fetchForecast(lote).then(setForecast);
+    }
+  }, [tab, forecast, lote]);
 
   const agregarNota = (nota: Nota) => {
     const nuevas = [nota, ...notas];
-    setNotas(nuevas);
     LS.set(`notas_${lote.id}`, nuevas);
+    setNotasKey(k => k + 1); // Forzar recarga
   };
+
   const eliminarNota = (id: number) => {
     const nuevas = notas.filter(n => n.id !== id);
-    setNotas(nuevas);
     LS.set(`notas_${lote.id}`, nuevas);
+    setNotasKey(k => k + 1); // Forzar recarga
   };
 
   const TABS = [
@@ -608,7 +618,7 @@ function Buscador() {
     <div style={{position:"absolute",top:14,right:14,zIndex:1000,display:"flex",gap:6,alignItems:"center"}}>
       {vis && <input autoFocus value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&ir()}
         placeholder="Lat, Lng  o  nombre del lugar"
-        style={{padding:"8px 12px",borderRadius:10,border:"none",background:"rgba(13,17,23,0.92)",color:"white",fontSize:12,width:230,outline:"none",backdropFilter:"blur(10px)",boxShadow:"0 3px 14px rgba(0,0,0,0.4)"}}/>}
+        style={{padding:"8px 12px",borderRadius:10,border:"none",background:"rgba(13,17,23,0.92)",color:"black",fontSize:12,width:230,outline:"none",backdropFilter:"blur(10px)",boxShadow:"0 3px 14px rgba(0,0,0,0.4)"}}/>}
       <button aria-label="Buscar lugar" onClick={()=>setVis(v=>!v)}
         style={{width:36,height:36,borderRadius:10,border:"none",background:"rgba(13,17,23,0.88)",color:"white",cursor:"pointer",fontSize:16,backdropFilter:"blur(10px)",boxShadow:"0 2px 10px rgba(0,0,0,0.3)"}}>
         🔍
@@ -641,15 +651,24 @@ function Pegman({ mapRef, onDrop }: { mapRef: React.RefObject<L.Map | null>; onD
   const [hint, setHint] = useState(true);
   const origin = useRef({x:0,y:0});
   const active = useRef(false);
-  useEffect(()=>{ const t=setTimeout(()=>setHint(false),5000); return()=>clearTimeout(t); },[]);
-  const start = (cx: number, cy: number) => { active.current=true; setDrag(true); setHint(false); origin.current={x:cx-pos.x,y:cy-pos.y}; mapRef.current?.dragging.disable(); mapRef.current?.scrollWheelZoom.disable(); };
-  const move  = (cx: number, cy: number) => { if(!active.current)return; setPos({x:cx-origin.current.x,y:cy-origin.current.y}); };
-  const end   = (cx: number, cy: number) => {
+
+  const start = useCallback((cx: number, cy: number) => {
+    active.current=true; setDrag(true); setHint(false); origin.current={x:cx-pos.x,y:cy-pos.y}; mapRef.current?.dragging.disable(); mapRef.current?.scrollWheelZoom.disable();
+  }, [pos.x, pos.y, mapRef]);
+
+  const move = useCallback((cx: number, cy: number) => {
+    if(!active.current)return; setPos({x:cx-origin.current.x,y:cy-origin.current.y});
+  }, []);
+
+  const end = useCallback((cx: number, cy: number) => {
     if(!active.current)return; active.current=false; setDrag(false);
     mapRef.current?.dragging.enable(); mapRef.current?.scrollWheelZoom.enable();
     setPos({x:16,y:72});
     if(mapRef.current){ const r=mapRef.current.getContainer().getBoundingClientRect(); const ll=mapRef.current.containerPointToLatLng(L.point(cx-r.left,cy-r.top)); onDrop([ll.lat,ll.lng]); }
-  };
+  }, [onDrop, mapRef]);
+
+  useEffect(()=>{ const t=setTimeout(()=>setHint(false),5000); return()=>clearTimeout(t); },[]);
+
   useEffect(()=>{
     const mm=(e: MouseEvent)=>move(e.clientX,e.clientY);
     const mu=(e: MouseEvent)=>end(e.clientX,e.clientY);
@@ -658,7 +677,7 @@ function Pegman({ mapRef, onDrop }: { mapRef: React.RefObject<L.Map | null>; onD
     window.addEventListener("mousemove",mm);window.addEventListener("mouseup",mu);
     window.addEventListener("touchmove",tm,{passive:false});window.addEventListener("touchend",tu);
     return()=>{window.removeEventListener("mousemove",mm);window.removeEventListener("mouseup",mu);window.removeEventListener("touchmove",tm);window.removeEventListener("touchend",tu);};
-  },[pos]);
+  },[move, end]);
   const c = drag?"#1253A4":"#1a73e8";
   return (
     <div onMouseDown={e=>{e.preventDefault();start(e.clientX,e.clientY);}} onTouchStart={e=>{e.stopPropagation();start(e.touches[0].clientX,e.touches[0].clientY);}}
@@ -831,7 +850,16 @@ export default function ApisSatelital() {
   const mapRef = useRef<L.Map | null>(null);
 
   useEffect(()=>{
-    const sin = lotes.map(({data: _d, cargando: _c, ...rest})=>rest);
+  const sin = lotes.map((lote) => ({
+    id: lote.id,
+    nombre: lote.nombre,
+    municipio: lote.municipio,
+    variedad: lote.variedad,
+    edadNum: lote.edadNum,
+    area: lote.area,
+    coords: lote.coords,
+    centro: lote.centro
+  }));
     LS.set("lotes_palmas", sin);
   }, [lotes]);
 

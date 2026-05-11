@@ -43,8 +43,8 @@ export default function Progreso({ usuario }: { usuario: UsuarioEmp }) {
           {areas.map(a => (
             <div key={a.label}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 6 }}>
-                <span style={{ color: 'rgba(255,255,255,0.75)' }}>{a.label}</span>
-                <span style={{ color: '#90cc00', fontWeight: 600 }}>{a.pct}%</span>
+                <span style={{ color: 'black' }}>{a.label}</span>
+                <span style={{ color: 'black', fontWeight: 600 }}>{a.pct}%</span>
               </div>
               <div className="progress-bar-wrap">
                 <div className={`progress-bar-fill ${a.color}`} style={{ width: `${a.pct}%` }} />
@@ -72,15 +72,15 @@ export default function Progreso({ usuario }: { usuario: UsuarioEmp }) {
               const pct = Math.round((s.completadas / s.tareas) * 100);
               return (
                 <tr key={s.sem}>
-                  <td>{s.sem}</td>
-                  <td>{s.tareas}</td>
-                  <td>{s.completadas}</td>
+                  <td style={{ color: 'black' }}>{s.sem}</td>
+                  <td style={{ color: 'black' }}>{s.tareas}</td>
+                  <td style={{ color: 'black' }}>{s.completadas}</td>
                   <td>
                     <span className={`badge ${pct >= 80 ? 'badge-green' : pct >= 60 ? 'badge-yellow' : 'badge-red'}`}>
                       {pct}%
                     </span>
                   </td>
-                  <td>{s.kg} kg</td>
+                  <td style={{ color: 'black' }}>{s.kg} kg</td>
                 </tr>
               );
             })}

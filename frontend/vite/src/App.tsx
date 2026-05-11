@@ -32,7 +32,7 @@ function HomePage() {
         </div>
         <div className="hero-right">
           <div className="hero-img-wrap">
-            <img src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?q=80&w=500" alt="Campo" />
+<img src="/palmas-africanas.jpg" alt="Palmas de aceite africanas" />
           </div>
           <div className="stat-badge badge-1"><span className="num">35+</span><span className="lbl">Años de Experiencia</span></div>
           <div className="stat-badge badge-2"><span className="num">7K</span><span className="lbl">Clientes Satisfechos</span></div>
@@ -82,13 +82,19 @@ function AboutPage() {
       <h2 className="section-heading">QUIÉNES SOMOS</h2>
       <p className="section-sub">Arraigados en la tradición, creciendo con la innovación</p>
       <div className="about-grid">
-        <div className="about-img"><img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=800" alt="Equipo" /></div>
+        <div className="about-img">
+          <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=800" alt="Equipo" />
+        </div>
         <div className="about-text">
           <p>Fundada en 1989, <span className="highlight">Agriculture Co.</span> ha pasado más de tres décadas transformando la forma en que el mundo cultiva.</p>
           <p>Nuestro equipo de <span className="highlight">más de 120 especialistas</span> colaboran para crear estrategias personalizadas para cada cliente.</p>
           <p>Con presencia en más de <span className="highlight">40 países</span> y más de 7.000 clientes satisfechos.</p>
           <div style={{ marginTop: 28 }}>
-            <img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=800" alt="Sostenible" style={{ width: '100%', borderRadius: 12, height: 180, objectFit: 'cover' }} />
+            <img
+              src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=800"
+              alt="Sostenible"
+              style={{ width: '100%', borderRadius: 14, height: 180, objectFit: 'cover', boxShadow: '0 4px 20px rgba(45,106,79,0.12)' }}
+            />
           </div>
         </div>
       </div>
@@ -98,12 +104,12 @@ function AboutPage() {
 
 function ServicesPage() {
   const services = [
-    { icon: '🌱', title: 'Optimización de Cultivos',  desc: 'Selección de semillas y estrategias basadas en datos, adaptadas a las condiciones de suelo y clima.',  color: '#4a9e2f' },
-    { icon: '💧', title: 'Riego Inteligente',          desc: 'Sistemas de riego con IA que reducen el consumo de agua hasta un 40% maximizando el rendimiento.',     color: '#2980b9' },
-    { icon: '🛰️', title: 'Agricultura de Precisión',  desc: 'Imágenes satelitales y drones para evaluación en tiempo real de la salud de los cultivos.',             color: '#8e44ad' },
-    { icon: '🧪', title: 'Análisis de Suelo',          desc: 'Análisis de laboratorio completo para conocer los nutrientes, pH y materia orgánica del suelo.',        color: '#c0392b' },
-    { icon: '📊', title: 'Pronóstico de Rendimiento',  desc: 'Analítica predictiva con machine learning para proyectar volúmenes de cosecha.',                        color: '#d35400' },
-    { icon: '🌿', title: 'Prácticas Sostenibles',      desc: 'Consultoría ecológica para reducir la huella de carbono y obtener certificaciones orgánicas.',           color: '#27ae60' },
+    { icon: '🌱', title: 'Optimización de Cultivos',  desc: 'Selección de semillas y estrategias basadas en datos, adaptadas a las condiciones de suelo y clima.',  color: '#2d6a4f' },
+    { icon: '💧', title: 'Riego Inteligente',          desc: 'Sistemas de riego con IA que reducen el consumo de agua hasta un 40% maximizando el rendimiento.',     color: '#1e40af' },
+    { icon: '🛰️', title: 'Agricultura de Precisión',  desc: 'Imágenes satelitales y drones para evaluación en tiempo real de la salud de los cultivos.',             color: '#6b21a8' },
+    { icon: '🧪', title: 'Análisis de Suelo',          desc: 'Análisis de laboratorio completo para conocer los nutrientes, pH y materia orgánica del suelo.',        color: '#b94040' },
+    { icon: '📊', title: 'Pronóstico de Rendimiento',  desc: 'Analítica predictiva con machine learning para proyectar volúmenes de cosecha.',                        color: '#c77b2a' },
+    { icon: '🌿', title: 'Prácticas Sostenibles',      desc: 'Consultoría ecológica para reducir la huella de carbono y obtener certificaciones orgánicas.',           color: '#40916c' },
   ];
   return (
     <div className="inner-page">
@@ -112,16 +118,22 @@ function ServicesPage() {
       <div className="services-grid">
         {services.map((s) => (
           <div className="service-card" key={s.title}>
-            <div className="service-icon" style={{ background: `${s.color}22`, border: `1px solid ${s.color}55` }}><span>{s.icon}</span></div>
+            <div className="service-icon" style={{ background: `${s.color}18`, border: `1.5px solid ${s.color}40` }}>
+              <span>{s.icon}</span>
+            </div>
             <div className="service-accent" style={{ background: s.color }} />
             <h3>{s.title}</h3>
             <p>{s.desc}</p>
-            <div className="service-arrow">→</div>
+            <div className="service-arrow" style={{ color: s.color }}>→</div>
           </div>
         ))}
       </div>
-      <div style={{ marginTop: 40 }}>
-        <img src="https://images.unsplash.com/photo-1586771107445-d3ca888129ce?q=80&w=1200" alt="Dron" style={{ width: '100%', height: 240, objectFit: 'cover', borderRadius: 14 }} />
+      <div style={{ marginTop: 44 }}>
+        <img
+          src="https://images.unsplash.com/photo-1586771107445-d3ca888129ce?q=80&w=1200"
+          alt="Dron"
+          style={{ width: '100%', height: 240, objectFit: 'cover', borderRadius: 16, boxShadow: '0 6px 28px rgba(45,106,79,0.14)' }}
+        />
       </div>
     </div>
   );
@@ -145,7 +157,10 @@ function GalleryPage() {
       <p className="section-sub">Momentos del campo — donde la naturaleza se une a la innovación</p>
       <div className="gallery-grid">
         {photos.map((p) => (
-          <div className="g-item" key={p.label}><img src={p.src} alt={p.label} /><div className="g-label">{p.label}</div></div>
+          <div className="g-item" key={p.label}>
+            <img src={p.src} alt={p.label} />
+            <div className="g-label">{p.label}</div>
+          </div>
         ))}
       </div>
     </div>
@@ -175,19 +190,27 @@ function ContactPage() {
           ].map((d) => (
             <div className="contact-detail" key={d.text}>
               <div className="contact-detail-icon">{d.icon}</div>
-              <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.75)' }}>{d.text}</span>
+              <span style={{ fontSize: 15, color: '#3d5247', fontWeight: 600 }}>{d.text}</span>
             </div>
           ))}
-          <img src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?q=80&w=600" alt="Equipo" style={{ width: '100%', borderRadius: 12, height: 180, objectFit: 'cover', marginTop: 24 }} />
+          <img
+            src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?q=80&w=600"
+            alt="Equipo"
+            style={{ width: '100%', borderRadius: 14, height: 180, objectFit: 'cover', marginTop: 24, boxShadow: '0 4px 18px rgba(45,106,79,0.12)' }}
+          />
         </div>
         <div>
           <form className="contact-form-box" onSubmit={handleSubmit}>
-            <input type="text" placeholder="Tu nombre completo" required />
-            <input type="email" placeholder="Correo electrónico" required />
-            <input type="text" placeholder="Empresa / Nombre de la finca" />
+            <input type="text"  placeholder="Tu nombre completo" required />
+            <input type="email" placeholder="Correo electrónico"  required />
+            <input type="text"  placeholder="Empresa / Nombre de la finca" />
             <textarea placeholder="¿Cómo podemos ayudarte?" required />
             <button type="submit">Enviar mensaje</button>
-            {sent && <div className="success-msg" style={{ display: 'block' }}>Mensaje enviado. Te responderemos en menos de 24 horas.</div>}
+            {sent && (
+              <div className="success-msg" style={{ display: 'block' }}>
+                ✅ Mensaje enviado. Te responderemos en menos de 24 horas.
+              </div>
+            )}
           </form>
         </div>
       </div>
@@ -214,10 +237,10 @@ function AuthModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (em
   return (
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal-box">
-        <h3>INICIAR SESIÓN</h3>
+        <h3>Iniciar Sesión</h3>
         <form onSubmit={handleSubmit}>
-          <input type="email" placeholder="Correo electrónico" value={email} onChange={e => setEmail(e.target.value)} required />
-          <input type="password" placeholder="Contraseña" value={pass} onChange={e => setPass(e.target.value)} required />
+          <input type="email"    placeholder="Correo electrónico" value={email} onChange={e => setEmail(e.target.value)} required />
+          <input type="password" placeholder="Contraseña"         value={pass}  onChange={e => setPass(e.target.value)}  required />
           <button type="submit" className="modal-submit">Ingresar</button>
         </form>
         {error && <div className="modal-error">Credenciales incorrectas. Intenta de nuevo.</div>}
@@ -333,7 +356,6 @@ function AppContent() {
       </Routes>
 
       <Footer />
-
       {modal && <AuthModal onClose={() => setModal(false)} onSuccess={handleSuccess} />}
     </>
   );

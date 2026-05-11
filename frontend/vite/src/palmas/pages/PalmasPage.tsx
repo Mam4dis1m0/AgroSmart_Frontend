@@ -132,7 +132,7 @@ export default function Palmas() {
           <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>Powered by Kindwise crop.health</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', maxWidth: 500 }}>
+          <p style={{ fontSize: 13, color: 'black', maxWidth: 500 }}>
             Toma una foto de una palma y nuestra IA detectará enfermedades, plagas y su estado sanitario en segundos.
           </p>
           <button className="add-btn" onClick={abrirModalIA}>Analizar palma con IA</button>
@@ -149,10 +149,10 @@ export default function Palmas() {
           <tbody>
             {palmas.map(p => (
               <tr key={p.id}>
-                <td style={{ color:'#90cc00', fontFamily:'monospace' }}>{p.codigo}</td>
-                <td>{p.lote}</td><td>{p.edad}</td><td>{p.altura}</td>
+                <td style={{ color: 'black', fontFamily:'monospace' }}>{p.codigo}</td>
+                <td style={{ color: 'black' }}>{p.lote}</td><td style={{ color: 'black' }}>{p.edad}</td><td style={{ color: 'black' }}>{p.altura}</td>
                 <td><span className={`badge ${p.estado==='Saludable'?'badge-green':'badge-yellow'}`}>{p.estado}</span></td>
-                <td style={{ color:'rgba(255,255,255,0.5)' }}>{p.revision}</td>
+                <td style={{ color: 'black' }}>{p.revision}</td>
                 <td><button className="act-btn" onClick={() => setPalmas(prev => prev.filter(x => x.id !== p.id))}>✕</button></td>
               </tr>
             ))}
@@ -165,16 +165,16 @@ export default function Palmas() {
           <div className="modal-box">
             <h3>REGISTRAR PALMA</h3>
             <div className="form-row">
-              <input placeholder="Código (Ej: PAL-005)" value={form.codigo} onChange={e => setForm({...form, codigo: e.target.value})} />
-              <select value={form.lote} onChange={e => setForm({...form, lote: e.target.value})}>
+              <input placeholder="Código (Ej: PAL-005)" value={form.codigo} onChange={e => setForm({...form, codigo: e.target.value})} style={{ color: 'black' }} />
+              <select value={form.lote} onChange={e => setForm({...form, lote: e.target.value})} style={{ color: 'black' }}>
                 {['Lote A','Lote B','Lote C','Lote D'].map(l => <option key={l}>{l}</option>)}
               </select>
             </div>
             <div className="form-row">
-              <input placeholder="Edad (Ej: 3 años)" value={form.edad} onChange={e => setForm({...form, edad: e.target.value})} />
-              <input placeholder="Altura (Ej: 7 m)" value={form.altura} onChange={e => setForm({...form, altura: e.target.value})} />
+              <input placeholder="Edad (Ej: 3 años)" value={form.edad} onChange={e => setForm({...form, edad: e.target.value})} style={{ color: 'black' }} />
+              <input placeholder="Altura (Ej: 7 m)" value={form.altura} onChange={e => setForm({...form, altura: e.target.value})} style={{ color: 'black' }} />
             </div>
-            <select value={form.estado} onChange={e => setForm({...form, estado: e.target.value})}>
+            <select value={form.estado} onChange={e => setForm({...form, estado: e.target.value})} style={{ color: 'black' }}>
               {['Saludable','En observación'].map(s => <option key={s}>{s}</option>)}
             </select>
             <div className="modal-actions">
@@ -196,8 +196,8 @@ export default function Palmas() {
               ) : (
                 <>
                   <div style={{ fontSize: 36, marginBottom: 8 }}>📷</div>
-                  <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>Haz clic para subir una foto de la palma</div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', marginTop: 4 }}>JPG, PNG — máx 5MB</div>
+                  <div style={{ fontSize: 13, color: 'black' }}>Haz clic para subir una foto de la palma</div>
+                  <div style={{ fontSize: 11, color: 'black', marginTop: 4 }}>JPG, PNG — máx 5MB</div>
                 </>
               )}
             </div>

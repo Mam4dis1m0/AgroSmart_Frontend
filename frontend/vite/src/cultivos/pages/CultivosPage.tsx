@@ -35,10 +35,10 @@ export default function Cultivos() {
           <tbody>
             {cultivos.map(c => (
               <tr key={c.id}>
-                <td style={{ color:'rgba(255,255,255,0.4)' }}>{c.id}</td>
-                <td>{c.nombre}</td><td>{c.area}</td><td>{c.lote}</td>
+                <td style={{ color: 'black' }}>{c.id}</td>
+                <td style={{ color: 'black' }}>{c.nombre}</td><td style={{ color: 'black' }}>{c.area}</td><td style={{ color: 'black' }}>{c.lote}</td>
                 <td><span className={`badge ${c.estado==='Activo'?'badge-green':'badge-yellow'}`}>{c.estado}</span></td>
-                <td>{c.cosecha}</td>
+                <td style={{ color: 'black' }}>{c.cosecha}</td>
                 <td><button className="act-btn" onClick={() => setCultivos(p => p.filter(x => x.id !== c.id))}>✕</button></td>
               </tr>
             ))}
@@ -50,15 +50,15 @@ export default function Cultivos() {
         <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setModal(false)}>
           <div className="modal-box">
             <h3>NUEVO CULTIVO</h3>
-            <input placeholder="Nombre del cultivo" value={form.nombre} onChange={e => setForm({...form, nombre: e.target.value})} />
+            <input placeholder="Nombre del cultivo" value={form.nombre} onChange={e => setForm({...form, nombre: e.target.value})} style={{ color: 'black' }} />
             <div className="form-row">
-              <input placeholder="Área (Ej: 20 ha)" value={form.area} onChange={e => setForm({...form, area: e.target.value})} />
-              <select value={form.lote} onChange={e => setForm({...form, lote: e.target.value})}>
+              <input placeholder="Área (Ej: 20 ha)" value={form.area} onChange={e => setForm({...form, area: e.target.value})} style={{ color: 'black' }} />
+              <select value={form.lote} onChange={e => setForm({...form, lote: e.target.value})} style={{ color: 'black' }}>
                 {['Lote A','Lote B','Lote C','Lote D'].map(l => <option key={l}>{l}</option>)}
               </select>
             </div>
-            <input placeholder="Cosecha estimada (Ej: Jun 2026)" value={form.cosecha} onChange={e => setForm({...form, cosecha: e.target.value})} />
-            <select value={form.estado} onChange={e => setForm({...form, estado: e.target.value})}>
+            <input placeholder="Cosecha estimada (Ej: Jun 2026)" value={form.cosecha} onChange={e => setForm({...form, cosecha: e.target.value})} style={{ color: 'black' }} />
+            <select value={form.estado} onChange={e => setForm({...form, estado: e.target.value})} style={{ color: 'black' }}>
               {['Activo','Pendiente'].map(s => <option key={s}>{s}</option>)}
             </select>
             <div className="modal-actions">
