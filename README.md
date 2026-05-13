@@ -1,73 +1,111 @@
-# React + TypeScript + Vite
+# Proyecto Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este repositorio contiene una aplicación web completa con un frontend en React/Vite, un backend en NestJS y utilidades para base de datos.
 
-Currently, two official plugins are available:
+## Estructura general del repositorio
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- `frontend/` - Aplicación cliente con Vite, React, TypeScript y React Router.
+- `backend/back/` - API REST construida con NestJS y TypeScript.
+- `scripts/` - Utilidades de soporte, por ejemplo `execute_sql.js`.
 
-## React Compiler
+> Nota: No hay `package.json` en la raíz. Cada parte del proyecto administra sus propias dependencias.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Detalle de carpetas
 
-## Expanding the ESLint configuration
+### `frontend/`
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Proyecto frontend principal.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- `package.json` - scripts y dependencias de Node.
+- `vite.config.ts` - configuración de Vite.
+- `src/` - código fuente de la aplicación React.
+- `public/` - archivos estáticos.
+- `tsconfig.json`, `tsconfig.app.json`, `tsconfig.node.json` - configuración de TypeScript.
+- `eslint.config.js` - reglas de ESLint para el frontend.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+También contiene `frontend/vite/`, un subdirectorio con configuración adicional de TypeScript y su propio `src/`.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### `backend/back/`
+
+API backend con NestJS.
+
+- `package.json` - scripts de NestJS, pruebas y lint.
+- `src/` - código fuente de la API.
+- `test/` - pruebas de integración y e2e.
+- `tsconfig.json`, `tsconfig.build.json` - configuración de TypeScript.
+- `nest-cli.json` - configuración del CLI de Nest.
+- `eslint.config.mjs` - reglas de ESLint para el backend.
+
+### `scripts/`
+
+Utilidades de soporte.
+
+- `execute_sql.js` - script Node.js que ejecuta un archivo SQL en MySQL.
+
+> Importante: `execute_sql.js` usa una ruta absoluta a `html/agrosmart_db_CORREGIDO.sql`. Asegúrate de tener ese archivo disponible o ajusta la ruta.
+
+## Tecnologías principales
+
+- Frontend: React, Vite, TypeScript, React Router, Chart.js.
+- Backend: NestJS, TypeScript, Jest, Supertest.
+- Base de datos: MySQL (a través de `mysql2` en `execute_sql.js`).
+
+## Cómo ejecutar el frontend
+
+1. Abrir terminal en `frontend`.
+2. Ejecutar:
+
+```powershell
+cd "frontend"
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+3. Abre el navegador en la dirección que indique Vite.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Cómo ejecutar el backend
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Abrir terminal en `backend\back`.
+2. Ejecutar:
+
+```powershell
+cd "backend\back"
+npm install
+npm run start:dev
 ```
+
+3. La API se iniciará en el puerto configurado por NestJS.
+
+## Comandos útiles
+
+### Frontend
+
+- `npm run dev` - iniciar servidor de desarrollo.
+- `npm run build` - compilar la aplicación.
+- `npm run lint` - ejecutar ESLint.
+- `npm run preview` - vista previa del build.
+
+### Backend
+
+- `npm run start:dev` - iniciar backend en modo desarrollo con watch.
+- `npm run build` - compilar el backend.
+- `npm run lint` - ejecutar ESLint.
+- `npm run test` - ejecutar pruebas unitarias.
+- `npm run test:e2e` - ejecutar pruebas e2e.
+
+### Scripts
+
+- `node scripts/execute_sql.js` - ejecutar script SQL para crear la base de datos local.
+
+## Recomendaciones para presentación
+
+1. Explica la arquitectura: frontend separado del backend, cada uno con su propio entorno.
+2. Muestra que el frontend usa Vite y React para una SPA moderna.
+3. Indica que el backend usa NestJS para estructura modular y servicios.
+4. Explica que el script `execute_sql.js` automatiza la instalación de la base de datos MySQL.
+
+## Observaciones
+
+- El repositorio no contiene un directorio `database/html/` dentro de la raíz.
+- El README anterior tenía rutas obsoletas a `frontend/all vite/`.
+- La estructura real es `frontend/` + `backend/back/` + `scripts/`.
