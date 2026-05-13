@@ -178,7 +178,7 @@ function ContactPage() {
           <h3>Comunícate con nosotros</h3>
           <p>Ya seas una pequeña finca o una gran empresa agroindustrial, nuestro equipo está listo para ayudarte.</p>
           {[
-            { icon: '📍', text: 'Avenida El Poblado 45-12, Medellín, Colombia' },
+            { icon: '📍', text: 'universidad popular del cesar' },
             { icon: '📞', text: '+57 (4) 321-456-789' },
             { icon: '✉️', text: 'hola@agriculture.co' },
             { icon: '🕐', text: 'Lun – Vie, 8:00 AM – 6:00 PM' },
@@ -267,6 +267,31 @@ function AuthModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (us
   );
 }
 
+function Navbar({ sesion, onLogout, onLogin }: { sesion: Usuario | null; onLogout: () => void; onLogin: () => void }) {
+  return (
+    <nav className="navbar">
+      <Link to="/" className="nav-logo"><div className="nav-logo-icon">🌿</div>AGRI</Link>
+      <ul className="nav-links">
+        <li><Link to="/">Inicio</Link></li>
+        <li><Link to="/about">Nosotros</Link></li>
+        <li><Link to="/services">Servicios</Link></li>
+        <li><Link to="/gallery">Galería</Link></li>
+        <li><Link to="/contact">Contacto</Link></li>
+      </ul>
+      <div className="auth-zone">
+        {sesion ? (
+          <div className="logged-badge">
+            <span>👤 {sesion.nombre}</span>
+            <button className="logout-btn" onClick={onLogout}>Cerrar sesión</button>
+          </div>
+        ) : (
+          <button onClick={onLogin}>Iniciar sesión</button>
+        )}
+      </div>
+    </nav>
+  );
+}
+
 function Footer() {
   return (
     <footer className="footer">
@@ -311,101 +336,75 @@ function AppContent() {
     return <div style={{ textAlign: 'center', padding: '40px' }}>Cargando...</div>;
   }
 
-  if (sesion) {
-    // Usuario autenticado - mostrar dashboard según rol
-    if (sesion.role === 'admin') {
-      return (
-        <Routes>
+  return (
+    <>
+      <Routes>
+        {/* Rutas para Admin */}
+        {sesion?.role === 'admin' && (
           <Route path="/dashboard" element={
             <DashboardApp
               usuario={{ email: sesion.email, nombre: sesion.nombre, role: 'admin' }}
               onLogout={handleLogout}
             />
           } />
-          <Route path="*" element={
-            <>
-              <nav className="navbar">
-                <Link to="/" className="nav-logo"><div className="nav-logo-icon">🌿</div>AGRI</Link>
-                <ul className="nav-links">
-                  <li><Link to="/">Inicio</Link></li>
-                  <li><Link to="/about">Nosotros</Link></li>
-                  <li><Link to="/services">Servicios</Link></li>
-                  <li><Link to="/gallery">Galería</Link></li>
-                  <li><Link to="/contact">Contacto</Link></li>
-                </ul>
-                <div className="logged-badge">
-                  <span>👤 {sesion.nombre}</span>
-                  <button className="logout-btn" onClick={handleLogout}>Cerrar sesión</button>
-                </div>
-              </nav>
-              <Routes>
-                <Route path="/"         element={<HomePage />} />
-                <Route path="/about"    element={<AboutPage />} />
-                <Route path="/services" element={<ServicesPage />} />
-                <Route path="/gallery"  element={<GalleryPage />} />
-                <Route path="/contact"  element={<ContactPage />} />
-              </Routes>
-              <Footer />
-            </>
-          } />
-        </Routes>
-      );
-    } else if (sesion.role === 'empleado') {
-      return (
-        <Routes>
+        )}
+
+        {/* Rutas para Empleado */}
+        {sesion?.role === 'empleado' && (
           <Route path="/empleado" element={
             <DashboardEmpleado
               usuario={{ email: sesion.email, nombre: sesion.nombre, role: 'empleado', lote: 'Lote Asignado' }}
               onLogout={handleLogout}
             />
           } />
-          <Route path="*" element={
-            <>
-              <nav className="navbar">
-                <Link to="/" className="nav-logo"><div className="nav-logo-icon">🌿</div>AGRI</Link>
-                <ul className="nav-links">
-                  <li><Link to="/">Inicio</Link></li>
-                </ul>
-                <div className="logged-badge">
-                  <span>👤 {sesion.nombre}</span>
-                  <button className="logout-btn" onClick={handleLogout}>Cerrar sesión</button>
-                </div>
-              </nav>
-              <Footer />
-            </>
-          } />
-        </Routes>
-      );
-    }
-  }
+        )}
 
-  // Usuario no autenticado - mostrar página pública
-  return (
-    <>
-      <nav className="navbar">
-        <Link to="/" className="nav-logo"><div className="nav-logo-icon">🌿</div>AGRI</Link>
-        <ul className="nav-links">
-          <li><Link to="/">Inicio</Link></li>
-          <li><Link to="/about">Nosotros</Link></li>
-          <li><Link to="/services">Servicios</Link></li>
-          <li><Link to="/gallery">Galería</Link></li>
-          <li><Link to="/contact">Contacto</Link></li>
-        </ul>
-        <div className="auth-zone">
-          <button onClick={() => setModal(true)}>Iniciar sesión</button>
-        </div>
-      </nav>
+        {/* Rutas públicas - disponibles para todos */}
+        <Route path="/" element={
+          <>
+            <Navbar sesion={sesion} onLogout={handleLogout} onLogin={() => setModal(true)} />
+            <HomePage />
+            <Footer />
+            {modal && <AuthModal onClose={() => setModal(false)} onSuccess={handleSuccess} />}
+          </>
+        } />
+        
+        <Route path="/about" element={
+          <>
+            <Navbar sesion={sesion} onLogout={handleLogout} onLogin={() => setModal(true)} />
+            <AboutPage />
+            <Footer />
+            {modal && <AuthModal onClose={() => setModal(false)} onSuccess={handleSuccess} />}
+          </>
+        } />
 
-      <Routes>
-        <Route path="/"         element={<HomePage />} />
-        <Route path="/about"    element={<AboutPage />} />
-        <Route path="/services" element={<ServicesPage />} />
-        <Route path="/gallery"  element={<GalleryPage />} />
-        <Route path="/contact"  element={<ContactPage />} />
+        <Route path="/services" element={
+          <>
+            <Navbar sesion={sesion} onLogout={handleLogout} onLogin={() => setModal(true)} />
+            <ServicesPage />
+            <Footer />
+            {modal && <AuthModal onClose={() => setModal(false)} onSuccess={handleSuccess} />}
+          </>
+        } />
+
+        <Route path="/gallery" element={
+          <>
+            <Navbar sesion={sesion} onLogout={handleLogout} onLogin={() => setModal(true)} />
+            <GalleryPage />
+            <Footer />
+            {modal && <AuthModal onClose={() => setModal(false)} onSuccess={handleSuccess} />}
+          </>
+        } />
+
+        <Route path="/contact" element={
+          <>
+            <Navbar sesion={sesion} onLogout={handleLogout} onLogin={() => setModal(true)} />
+            <ContactPage />
+            <Footer />
+            {modal && <AuthModal onClose={() => setModal(false)} onSuccess={handleSuccess} />}
+          </>
+        } />
       </Routes>
-
-      <Footer />
-      {modal && <AuthModal onClose={() => setModal(false)} onSuccess={handleSuccess} />}
     </>
   );
 }
