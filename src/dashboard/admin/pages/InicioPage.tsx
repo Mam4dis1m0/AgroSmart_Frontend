@@ -10,6 +10,7 @@ interface Clima {
   temperatura: number; viento: number; lluvia: number;
   humedad: number; descripcion: string;
 }
+
 function useClima() {
   const [clima, setClima]     = useState<Clima | null>(null);
   const [cargando, setCargando] = useState(true);
@@ -18,12 +19,20 @@ function useClima() {
       .then(r => r.json())
       .then(d => {
         const c = d.current;
+        const temp = c.temperature_2m;
+        let desc = 'Temperatura fresca';
+        if (temp > 30) desc = 'Calor intenso';
+        else if (temp > 24) desc = 'Temperatura agradable';
+
         setClima({
-          temperatura: c.temperature_2m, viento: c.wind_speed_10m,
-          lluvia: c.precipitation,       humedad: c.relative_humidity_2m,
-          descripcion: c.temperature_2m > 30 ? 'Calor intenso' : c.temperature_2m > 24 ? 'Temperatura agradable' : 'Temperatura fresca',
+          temperatura: temp,
+          viento: c.wind_speed_10m,
+          lluvia: c.precipitation,
+          humedad: c.relative_humidity_2m,
+          descripcion: desc,
         });
       })
+      .catch(() => setClima(null))
       .finally(() => setCargando(false));
   }, []);
   return { clima, cargando };
@@ -41,7 +50,7 @@ interface TareaReciente {
 function useDatos() {
   const [stats, setStats]           = useState<Stats | null>(null);
   const [tareas, setTareas]         = useState<TareaReciente[]>([]);
-  const [produccion, setProduccion] = useState<number[]>([42, 55, 38, 67, 71, 60]); // fallback
+  const [produccion, setProduccion] = useState<number[]>([42, 55, 38, 67, 71, 60]);
   const [cargando, setCargando]     = useState(true);
 
   useEffect(() => {
@@ -70,12 +79,11 @@ function useDatos() {
           palmas:    Array.isArray(palmas)     ? palmas.length    : 0,
           cultivos:  Array.isArray(cultivos)   ? cultivos.length  : 0,
           empleados: Array.isArray(empleados)  ? empleados.length : 0,
-          tareasActivas:    activas,
-          tareasPendientes: pendientes,
+          tareasActivas:     activas,
+          tareasPendientes:  pendientes,
           tareasCompletadas: completadas,
         });
 
-        // Últimas 4 tareas
         if (Array.isArray(tareasRaw) && tareasRaw.length > 0) {
           const ultimas = tareasRaw.slice(-4).reverse().map((t: any) => ({
             nombre:   t.nombretarea   ?? t.nombre   ?? t.titulo ?? '—',
@@ -87,9 +95,8 @@ function useDatos() {
           }));
           setTareas(ultimas);
         }
-
       } catch {
-        // mantiene fallback
+        // fallback
       } finally {
         setCargando(false);
       }
@@ -99,6 +106,79 @@ function useDatos() {
 
   return { stats, tareas, produccion, cargando };
 }
+
+/* ── 3D WEATHER ICONS (SVG) ── */
+const WeatherIconTemp = () => (
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="tempGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#DC2626"/>
+        <stop offset="100%" stopColor="#EF4444"/>
+      </linearGradient>
+      <filter id="tempShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#DC2626" floodOpacity="0.3"/>
+      </filter>
+    </defs>
+    <circle cx="24" cy="24" r="18" fill="url(#tempGrad)" filter="url(#tempShadow)" opacity="0.15"/>
+    <circle cx="24" cy="24" r="12" fill="url(#tempGrad)" filter="url(#tempShadow)"/>
+    <path d="M24 12V16M24 32V36M12 24H16M32 24H36M16.7 16.7L19.5 19.5M28.5 28.5L31.3 31.3M16.7 31.3L19.5 28.5M28.5 19.5L31.3 16.7" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+  </svg>
+);
+
+const WeatherIconHumidity = () => (
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="humGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#1E40AF"/>
+        <stop offset="100%" stopColor="#3B82F6"/>
+      </linearGradient>
+      <filter id="humShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#1E40AF" floodOpacity="0.3"/>
+      </filter>
+    </defs>
+    <ellipse cx="24" cy="28" rx="14" ry="10" fill="url(#humGrad)" filter="url(#humShadow)" opacity="0.15"/>
+    <path d="M24 8C24 8 14 18 14 28C14 34 18 38 24 38C30 38 34 34 34 28C34 18 24 8 24 8Z" fill="url(#humGrad)" filter="url(#humShadow)"/>
+    <ellipse cx="20" cy="24" rx="3" ry="2" fill="white" opacity="0.4"/>
+  </svg>
+);
+
+const WeatherIconWind = () => (
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="windGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#C77B2A"/>
+        <stop offset="100%" stopColor="#D97706"/>
+      </linearGradient>
+      <filter id="windShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#C77B2A" floodOpacity="0.3"/>
+      </filter>
+    </defs>
+    <circle cx="24" cy="24" r="18" fill="url(#windGrad)" filter="url(#windShadow)" opacity="0.15"/>
+    <path d="M10 20H28C30 20 32 18 32 16C32 14 30 12 28 12" stroke="url(#windGrad)" strokeWidth="3" strokeLinecap="round" filter="url(#windShadow)"/>
+    <path d="M10 28H34C36 28 38 30 38 32C38 34 36 36 34 36" stroke="url(#windGrad)" strokeWidth="3" strokeLinecap="round" filter="url(#windShadow)"/>
+    <path d="M10 36H24" stroke="url(#windGrad)" strokeWidth="3" strokeLinecap="round" filter="url(#windShadow)"/>
+    <circle cx="36" cy="16" r="4" fill="url(#windGrad)" filter="url(#windShadow)"/>
+  </svg>
+);
+
+const WeatherIconRain = () => (
+  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="rainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#1E40AF"/>
+        <stop offset="100%" stopColor="#3B82F6"/>
+      </linearGradient>
+      <filter id="rainShadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#1E40AF" floodOpacity="0.3"/>
+      </filter>
+    </defs>
+    <ellipse cx="24" cy="20" rx="14" ry="10" fill="url(#rainGrad)" filter="url(#rainShadow)" opacity="0.15"/>
+    <path d="M16 20C16 14 20 10 24 10C28 10 32 14 32 20" fill="url(#rainGrad)" filter="url(#rainShadow)"/>
+    <path d="M18 26L16 34" stroke="url(#rainGrad)" strokeWidth="2.5" strokeLinecap="round" filter="url(#rainShadow)"/>
+    <path d="M24 26L22 34" stroke="url(#rainGrad)" strokeWidth="2.5" strokeLinecap="round" filter="url(#rainShadow)"/>
+    <path d="M30 26L28 34" stroke="url(#rainGrad)" strokeWidth="2.5" strokeLinecap="round" filter="url(#rainShadow)"/>
+  </svg>
+);
 
 /* ── COMPONENTE ── */
 export default function Inicio() {
@@ -120,24 +200,35 @@ export default function Inicio() {
         datasets: [{
           label: 'Toneladas',
           data: produccion,
-          backgroundColor: '#40916c',
-          borderRadius: 8,
-          hoverBackgroundColor: '#2d6a4f',
+          backgroundColor: '#2E7D32',
+          borderRadius: 12,
+          borderSkipped: false,
+          hoverBackgroundColor: '#1B5E20',
+          barThickness: 32,
         }],
       },
       options: {
-        responsive: true, maintainAspectRatio: false,
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { ticks: { color: '#7a9485', font: { size: 12 } }, grid: { display: false }, border: { display: false } },
-          y: { ticks: { color: '#7a9485', font: { size: 12 } }, grid: { color: 'rgba(45,106,79,0.08)' }, border: { display: false } },
+          x: {
+            ticks: { color: '#8A9A8F', font: { size: 12, family: 'Inter' } },
+            grid: { display: false },
+            border: { display: false },
+          },
+          y: {
+            ticks: { color: '#8A9A8F', font: { size: 12, family: 'Inter' } },
+            grid: { color: 'rgba(27,94,32,0.06)' },
+            border: { display: false },
+          },
         },
       },
     });
     return () => prodChart.current?.destroy();
   }, [produccion]);
 
-  // Gráfica estado tareas
+  // Gráfica estado tareas — Doughnut
   useEffect(() => {
     if (!estRef.current || !stats) return;
     estChart.current?.destroy();
@@ -147,23 +238,34 @@ export default function Inicio() {
         labels: ['Activos', 'Pendientes', 'Completados'],
         datasets: [{
           data: [stats.tareasActivas, stats.tareasPendientes, stats.tareasCompletadas],
-          backgroundColor: ['#40916c', '#c77b2a', '#2d6a4f'],
-          borderWidth: 0, hoverOffset: 6,
+          backgroundColor: ['#2E7D32', '#D97706', '#1B5E20'],
+          borderWidth: 0,
+          hoverOffset: 8,
+          borderRadius: 8,
         }],
       },
       options: {
-        responsive: true, maintainAspectRatio: false,
+        responsive: true,
+        maintainAspectRatio: false,
         plugins: { legend: { display: false } },
-        cutout: '65%',
+        cutout: '68%',
+        animation: {
+          animateRotate: true,
+          animateScale: true,
+          duration: 1000,
+          easing: 'easeOutQuart',
+        },
       },
     });
     return () => estChart.current?.destroy();
   }, [stats]);
 
   const estadoBadge: Record<string, string> = {
-    activo: 'badge-green', en_progreso: 'badge-green',
+    activo: 'badge-green',
+    en_progreso: 'badge-green',
     pendiente: 'badge-yellow',
-    completada: 'badge-blue', completado: 'badge-blue',
+    completada: 'badge-blue',
+    completado: 'badge-blue',
   };
 
   const totalTareas = (stats?.tareasActivas ?? 0) + (stats?.tareasPendientes ?? 0) + (stats?.tareasCompletadas ?? 0);
@@ -171,45 +273,78 @@ export default function Inicio() {
   const pctPendientes = totalTareas ? Math.round((stats!.tareasPendientes  / totalTareas) * 100) : 11;
   const pctCompletadas= totalTareas ? Math.round((stats!.tareasCompletadas / totalTareas) * 100) : 62;
 
+  const getTempClass = (temp: number) => {
+    if (temp > 30) return 'hot';
+    if (temp > 24) return 'warm';
+    if (temp < 18) return 'cool';
+    return 'normal';
+  };
+
   return (
     <>
       <p className="page-title">Panel de Control</p>
       <p className="page-sub">Resumen general del sistema — Agriculture Co.</p>
 
-      {/* CLIMA */}
-      <div className="table-card" style={{ marginBottom: 24 }}>
-        <div className="table-header">
-          <span>Clima en tiempo real — Valledupar, Cesar</span>
-          <span style={{ fontSize: 12, color: '#7a9485', fontWeight: 600 }}>Fuente: Open-Meteo</span>
+      {/* CLIMA — Glassmorphism */}
+      <div className="weather-section">
+        <div className="weather-header">
+          <div className="weather-header-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17.5 19c0-3.037-2.463-5.5-5.5-5.5S6.5 15.963 6.5 19"/>
+              <circle cx="12" cy="10" r="3"/>
+              <path d="M12 2v2M4.93 4.93l1.41 1.41M2 12h2M19.07 4.93l-1.41 1.41M22 12h-2"/>
+            </svg>
+            Clima en tiempo real — Valledupar, Cesar
+          </div>
+          <span className="weather-source">Fuente: Open-Meteo</span>
         </div>
+
         {cargandoClima ? (
-          <div style={{ textAlign: 'center', padding: 20, color: '#7a9485', fontWeight: 600 }}>Cargando datos del clima...</div>
+          <div className="weather-loading">Cargando datos del clima...</div>
         ) : clima ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14 }}>
-            {[
-              { icon: '🌡️', label: 'Temperatura',  val: `${clima.temperatura}°C`, color: clima.temperatura > 30 ? '#b94040' : '#2d6a4f' },
-              { icon: '💧', label: 'Humedad',       val: `${clima.humedad}%`,      color: '#1e40af' },
-              { icon: '🌬️', label: 'Viento',        val: `${clima.viento} km/h`,   color: '#c77b2a' },
-              { icon: '🌧️', label: 'Precipitación', val: `${clima.lluvia} mm`,     color: '#1e40af' },
-            ].map(item => (
-              <div key={item.label} style={{ background: '#f5f0e8', border: '1.5px solid rgba(45,106,79,0.15)', borderRadius: 12, padding: 16, textAlign: 'center' }}>
-                <div style={{ fontSize: 28, marginBottom: 8 }}>{item.icon}</div>
-                <div style={{ fontSize: 11, color: '#7a9485', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6, fontWeight: 700 }}>{item.label}</div>
-                <div style={{ fontSize: 24, fontFamily: 'Playfair Display, serif', color: item.color, fontWeight: 700 }}>{item.val}</div>
+          <div className="weather-grid">
+            <div className="weather-card">
+              <div className="weather-icon"><WeatherIconTemp /></div>
+              <div className="weather-label">Temperatura</div>
+              <div className={`weather-value ${getTempClass(clima.temperatura)}`}>
+                {clima.temperatura}°C
               </div>
-            ))}
-            <div style={{ gridColumn: '1 / -1', textAlign: 'center', fontSize: 13, color: '#7a9485', paddingTop: 10, borderTop: '1px solid rgba(45,106,79,0.1)', fontWeight: 600 }}>
-              {clima.descripcion} — Datos actualizados en tiempo real
+              <div className="weather-desc">{clima.descripcion}</div>
+            </div>
+
+            <div className="weather-card">
+              <div className="weather-icon"><WeatherIconHumidity /></div>
+              <div className="weather-label">Humedad</div>
+              <div className="weather-value normal">{clima.humedad}%</div>
+              <div className="weather-desc">Relativa del aire</div>
+            </div>
+
+            <div className="weather-card">
+              <div className="weather-icon"><WeatherIconWind /></div>
+              <div className="weather-label">Viento</div>
+              <div className="weather-value normal">{clima.viento} km/h</div>
+              <div className="weather-desc">Velocidad actual</div>
+            </div>
+
+            <div className="weather-card">
+              <div className="weather-icon"><WeatherIconRain /></div>
+              <div className="weather-label">Precipitación</div>
+              <div className="weather-value normal">{clima.lluvia} mm</div>
+              <div className="weather-desc">Acumulado hoy</div>
+            </div>
+
+            <div className="weather-footer">
+              {clima.descripcion} — Datos actualizados en tiempo real desde Open-Meteo
             </div>
           </div>
         ) : (
-          <div style={{ textAlign: 'center', padding: 20, color: '#b94040', fontWeight: 600 }}>No se pudo obtener el clima.</div>
+          <div className="weather-error">No se pudo obtener el clima. Intente más tarde.</div>
         )}
       </div>
 
       {/* MÉTRICAS */}
       {cargandoDatos ? (
-        <div style={{ textAlign: 'center', padding: 20, color: '#7a9485', fontWeight: 600 }}>Cargando datos...</div>
+        <div className="loading-overlay">Cargando datos del sistema...</div>
       ) : (
         <div className="metrics">
           {[
@@ -230,16 +365,16 @@ export default function Inicio() {
       {/* GRÁFICAS */}
       <div className="charts-row">
         <div className="chart-card">
-          <div className="chart-title">Producción mensual (ton)</div>
+          <div className="chart-title">Producción mensual (toneladas)</div>
           <div className="chart-wrap"><canvas ref={prodRef} /></div>
         </div>
         <div className="chart-card">
           <div className="chart-title">Estado de tareas</div>
           <div className="chart-legend">
             {[
-              ['#40916c', `Activos ${pctActivas}%`],
-              ['#c77b2a', `Pendientes ${pctPendientes}%`],
-              ['#2d6a4f', `Completados ${pctCompletadas}%`],
+              ['#2E7D32', `Activos ${pctActivas}%`],
+              ['#D97706', `Pendientes ${pctPendientes}%`],
+              ['#1B5E20', `Completados ${pctCompletadas}%`],
             ].map(([c, l]) => (
               <span key={l}><span className="legend-dot" style={{ background: c }} />{l}</span>
             ))}
@@ -249,10 +384,12 @@ export default function Inicio() {
       </div>
 
       {/* TAREAS RECIENTES */}
-      <div className="table-card">
-        <div className="table-header"><span>Tareas recientes</span></div>
+      <div className="tasks-section">
+        <div className="tasks-header">
+          <div className="tasks-header-title">Tareas recientes</div>
+        </div>
         {tareas.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: 20, color: '#7a9485' }}>No hay tareas registradas</div>
+          <div className="empty-state">No hay tareas registradas en el sistema</div>
         ) : (
           <table>
             <thead>

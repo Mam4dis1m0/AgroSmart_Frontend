@@ -36,53 +36,56 @@ export const ProfileContext = createContext<ProfileCtx>({
 export const useProfile = () => useContext(ProfileContext);
 
 /* ─────────────────────────────────────────────────────────────
-   ICONOS SVG — sin emojis
+   ICONOS SVG — Outline minimalista
 ───────────────────────────────────────────────────────────── */
 const Icons: { [key: string]: ReactElement } = {
   inicio: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
     </svg>
   ),
   tareas: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
     </svg>
   ),
   cultivos: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22V12"/><path d="M5 12C5 7 8.5 3 12 3s7 4 7 9"/><path d="M5 12c2-2 4.5-3 7-3"/>
     </svg>
   ),
   lotes: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
     </svg>
   ),
   palmas: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12 22v-9"/><path d="M7 8c0-3 2-5 5-5s5 2 5 5"/><path d="M4 11c1-3 4-4 6-3"/><path d="M20 11c-1-3-4-4-6-3"/>
     </svg>
   ),
   empleados: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
       <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
     </svg>
   ),
   graficas: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+      <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
     </svg>
   ),
   insumos: (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>
     </svg>
   ),
 };
 
 /* ─────────────────────────────────────────────────────────────
-   MENÚ — sin emojis
+   MENÚ
 ───────────────────────────────────────────────────────────── */
 const MENU = [
   { id: 'inicio',    label: 'Inicio'    },
@@ -114,10 +117,11 @@ function Avatar({ size = 36, className = '' }: { size?: number; className?: stri
       className={className}
       style={{
         width: size, height: size, borderRadius: '50%', flexShrink: 0,
-        background: 'linear-gradient(135deg,#16a34a,#059669)',
+        background: 'linear-gradient(135deg, #1B5E20, #2E7D32)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         color: '#fff', fontWeight: 700, fontSize: size * 0.38,
         userSelect: 'none',
+        boxShadow: '0 2px 8px rgba(27, 94, 32, 0.25)',
       }}
     >
       {nombre?.[0]?.toUpperCase() ?? '?'}
@@ -151,7 +155,7 @@ function ProfileModal({ usuario, onClose, onLogout }: {
       const result = reader.result as string;
       setFoto(result);
       localStorage.setItem(`agrosmart_avatar_${usuario.email}`, result);
-      setMsg({ text: 'Foto actualizada ✓', ok: true });
+      setMsg({ text: 'Foto actualizada correctamente', ok: true });
     };
     reader.readAsDataURL(file);
   };
@@ -166,7 +170,7 @@ function ProfileModal({ usuario, onClose, onLogout }: {
     if (!displayName.trim()) return;
     setNombre(displayName.trim());
     localStorage.setItem(`agrosmart_nombre_${usuario.email}`, displayName.trim());
-    setMsg({ text: 'Nombre actualizado ✓', ok: true });
+    setMsg({ text: 'Nombre actualizado correctamente', ok: true });
   };
 
   const savePassword = () => {
@@ -180,7 +184,7 @@ function ProfileModal({ usuario, onClose, onLogout }: {
       setMsg({ text: 'Mínimo 6 caracteres', ok: false }); return;
     }
     setOldPass(''); setNewPass(''); setConfirmPass('');
-    setMsg({ text: 'Contraseña actualizada ✓', ok: true });
+    setMsg({ text: 'Contraseña actualizada correctamente', ok: true });
   };
 
   useEffect(() => {
@@ -208,7 +212,9 @@ function ProfileModal({ usuario, onClose, onLogout }: {
               <div className="db-photo-ring">
                 <Avatar size={90} />
                 <button className="db-photo-edit" onClick={() => fileRef.current?.click()} title="Cambiar foto">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/>
+                  </svg>
                 </button>
               </div>
               <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhoto} />
@@ -222,7 +228,7 @@ function ProfileModal({ usuario, onClose, onLogout }: {
                   </button>
                 )}
               </div>
-              <p className="db-photo-hint">JPG, PNG · Máx 2 MB</p>
+              <p className="db-photo-hint">JPG, PNG · Máximo 2 MB</p>
             </div>
 
             <div className="db-field">
@@ -289,7 +295,7 @@ function ProfileModal({ usuario, onClose, onLogout }: {
 }
 
 /* ─────────────────────────────────────────────────────────────
-   TOPBAR
+   TOPBAR — Navegación superior minimalista
 ───────────────────────────────────────────────────────────── */
 function Topbar({
   usuario, activePage, setPage, onLogout,
@@ -312,15 +318,24 @@ function Topbar({
     return () => document.removeEventListener('mousedown', fn);
   }, []);
 
- return (
+  return (
     <>
       <header className="db-topbar">
         <div className="db-topbar__left">
           <div className="db-topbar__logo">
-            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <circle cx="14" cy="14" r="14" fill="#16a34a"/>
-              <path d="M14 6s-6 4-6 9a6 6 0 0012 0c0-5-6-9-6-9z" fill="#fff" fillOpacity=".9"/>
-              <path d="M14 12v7M11 16l3-4 3 4" stroke="#14532d" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <defs>
+                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#1B5E20"/>
+                  <stop offset="100%" stopColor="#2E7D32"/>
+                </linearGradient>
+                <filter id="logoShadow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#1B5E20" floodOpacity="0.3"/>
+                </filter>
+              </defs>
+              <circle cx="16" cy="16" r="14" fill="url(#logoGrad)" filter="url(#logoShadow)"/>
+              <path d="M16 6s-7 5-7 10a7 7 0 0014 0c0-5-7-10-7-10z" fill="#fff" fillOpacity=".95"/>
+              <path d="M16 12v9M13 17l3-4 3 4" stroke="#1B5E20" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <span>AgroSmart</span>
           </div>
@@ -341,8 +356,9 @@ function Topbar({
 
         <div className="db-topbar__right">
           <button className="db-icon-btn" title="Notificaciones">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 01-3.46 0"/>
             </svg>
             <span className="db-notif-dot" />
           </button>
@@ -351,7 +367,7 @@ function Topbar({
             <button className="db-user-trigger" onClick={() => setUserMenuOpen(v => !v)}>
               <Avatar size={32} />
               <span className="db-user-name">{nombre}</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 9l6 6 6-6"/>
               </svg>
             </button>
@@ -359,7 +375,7 @@ function Topbar({
             {userMenuOpen && (
               <div className="db-user-dropdown">
                 <div className="db-user-dropdown__info">
-                  <Avatar size={42} />
+                  <Avatar size={44} />
                   <div>
                     <strong>{nombre}</strong>
                     <span>{usuario.email}</span>
@@ -367,16 +383,22 @@ function Topbar({
                 </div>
                 <div className="db-user-dropdown__divider" />
                 <button onClick={() => { setUserMenuOpen(false); setProfileOpen(true); }}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                  </svg>
                   Mi perfil
                 </button>
                 <button onClick={() => { setUserMenuOpen(false); setProfileOpen(true); }}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+                  </svg>
                   Configuración
                 </button>
                 <div className="db-user-dropdown__divider" />
                 <button className="db-user-dropdown__logout" onClick={onLogout}>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+                  </svg>
                   Cerrar sesión
                 </button>
               </div>
@@ -424,7 +446,6 @@ export default function DashboardAdmin({
   usuario: Usuario;
   onLogout: () => void;
 }) {
-  // ← navMode empieza en 'top' por defecto
   const [pagina, setPagina]   = useState('inicio');
   const navMode = 'top';
 
@@ -463,12 +484,12 @@ export default function DashboardAdmin({
         />
 
         <div className="db-body">
-  <main className="db-main">
-    <div className="db-main__inner">
-      {renderPage()}
-    </div>
-  </main>
-</div>
+          <main className="db-main">
+            <div className="db-main__inner">
+              {renderPage()}
+            </div>
+          </main>
+        </div>
       </div>
     </ProfileContext.Provider>
   );

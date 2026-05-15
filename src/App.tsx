@@ -1,13 +1,126 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'framer-motion';
 import './App.css';
 import DashboardApp from './dashboard/admin/DashboardAdmin';
 import DashboardEmpleado from './dashboard/empleado/DashboardEmpleado';
 import { authService, Usuario } from './APis/authService';
 
+/* ═══════════════════════════════════════════════════════════
+   ANIMATION VARIANTS
+   ═══════════════════════════════════════════════════════════ */
+const fadeInUp = {
+  hidden: { opacity: 0, y: 60 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
+};
+
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 1, ease: 'easeOut' } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15, delayChildren: 0.2 }
+  }
+};
+
+const scaleIn = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } }
+};
+
+/* ─── PARTICLE BACKGROUND ───────────────────────────────── */
+function ParticleBackground() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let animationId: number;
+    let particles: Array<{
+      x: number; y: number; vx: number; vy: number;
+      radius: number; opacity: number;
+    }> = [];
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    const createParticles = () => {
+      particles = [];
+      const count = Math.floor(window.innerWidth / 15);
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          radius: Math.random() * 2 + 0.5,
+          opacity: Math.random() * 0.5 + 0.1
+        });
+      }
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      particles.forEach((p, i) => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(34, 197, 94, ${p.opacity})`;
+        ctx.fill();
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[j].x - p.x;
+          const dy = particles[j].y - p.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 150) {
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(34, 197, 94, ${0.1 * (1 - dist / 150)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      });
+
+      animationId = requestAnimationFrame(draw);
+    };
+
+    resize();
+    createParticles();
+    draw();
+
+    window.addEventListener('resize', () => { resize(); createParticles(); });
+
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="particle-canvas" />;
+}
+
 /* ─── NAVBAR ─────────────────────────────────────────────── */
 function Navbar({ sesion, onLogout, onLogin }: { sesion: Usuario | null; onLogout: () => void; onLogin: () => void }) {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 40);
     window.addEventListener('scroll', fn);
@@ -15,38 +128,95 @@ function Navbar({ sesion, onLogout, onLogin }: { sesion: Usuario | null; onLogou
   }, []);
 
   return (
-    <nav className={`ag-nav ${scrolled ? 'ag-nav--solid' : ''}`}>
+    <motion.nav 
+      className={`ag-nav ${scrolled ? 'ag-nav--solid' : ''}`}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+    >
       <Link to="/" className="ag-nav__logo">
-        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-          <circle cx="14" cy="14" r="14" fill="#22c55e"/>
-          <path d="M14 6c0 0-6 4-6 9a6 6 0 0012 0c0-5-6-9-6-9z" fill="#fff" fillOpacity=".9"/>
-          <path d="M14 12v8M11 16l3-4 3 4" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        <motion.div
+          whileHover={{ rotate: 360 }}
+          transition={{ duration: 0.8 }}
+        >
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <circle cx="14" cy="14" r="14" fill="#22c55e"/>
+            <path d="M14 6c0 0-6 4-6 9a6 6 0 0012 0c0-5-6-9-6-9z" fill="#fff" fillOpacity=".9"/>
+            <path d="M14 12v8M11 16l3-4 3 4" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </motion.div>
         <span>AgroSmart</span>
       </Link>
 
-      <ul className="ag-nav__links">
-        {[['/', 'Inicio'], ['/about', 'Nosotros'], ['/services', 'Servicios'], ['/gallery', 'Galería'], ['/contact', 'Contacto']].map(([to, label]) => (
-          <li key={to}><Link to={to}>{label}</Link></li>
+      <ul className={`ag-nav__links ${menuOpen ? 'ag-nav__links--open' : ''}`}>
+        {[
+          ['/', 'Inicio'], 
+          ['/about', 'Nosotros'], 
+          ['/services', 'Servicios'], 
+          ['/gallery', 'Galería'], 
+          ['/contact', 'Contacto']
+        ].map(([to, label], i) => (
+          <motion.li 
+            key={to}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 * i + 0.3 }}
+          >
+            <Link to={to} onClick={() => setMenuOpen(false)}>{label}</Link>
+          </motion.li>
         ))}
       </ul>
 
       <div className="ag-nav__auth">
         {sesion ? (
           <>
-            <span className="ag-nav__user">👤 {sesion.nombre}</span>
-            <button className="ag-btn ag-btn--outline" onClick={onLogout}>Salir</button>
+            <motion.span 
+              className="ag-nav__user"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              👤 {sesion.nombre}
+            </motion.span>
+            <motion.button 
+              className="ag-btn ag-btn--outline" 
+              onClick={onLogout}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Salir
+            </motion.button>
           </>
         ) : (
-          <button className="ag-btn ag-btn--primary" onClick={onLogin}>Iniciar sesión</button>
+          <motion.button 
+            className="ag-btn ag-btn--primary" 
+            onClick={onLogin}
+            whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(34,197,94,0.4)' }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Iniciar sesión
+          </motion.button>
         )}
       </div>
-    </nav>
+
+      <button className="ag-nav__menu-btn" onClick={() => setMenuOpen(!menuOpen)}>
+        <span></span><span></span><span></span>
+      </button>
+    </motion.nav>
   );
 }
 
-/* ─── HOME ────────────────────────────────────────────────── */
-function HomePage() {
+/* ─── HERO SECTION ───────────────────────────────────────── */
+function HeroSection() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start start', 'end start']
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], [0, 300]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 1.1]);
+
   const [query, setQuery] = useState('');
 
   const servicios = [
@@ -56,6 +226,196 @@ function HomePage() {
     { icon: '🧪', label: 'Análisis de Suelo',         slug: 'suelo'        },
   ];
 
+  return (
+    <section className="ag-hero" ref={ref}>
+      <ParticleBackground />
+
+      <motion.div className="ag-hero__bg" style={{ scale }}>
+        <img src="/palmas-africanas.jpg" alt="Campos agrícolas" />
+        <div className="ag-hero__overlay" />
+        <div className="ag-hero__gradient" />
+      </motion.div>
+
+      <motion.div className="ag-hero__content" style={{ y, opacity }}>
+        <motion.p 
+          className="ag-hero__eyebrow"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <span className="ag-hero__eyebrow-line" />
+          Agricultura Sostenible desde 1989
+          <span className="ag-hero__eyebrow-line" />
+        </motion.p>
+
+        <motion.h1 
+          className="ag-hero__title"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <span className="ag-hero__title-line">Tecnología para</span>
+          <span className="ag-hero__title-line ag-hero__title-line--highlight">
+            el campo colombiano
+          </span>
+        </motion.h1>
+
+        <motion.p 
+          className="ag-hero__sub"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.6 }}
+        >
+          Optimizamos cada proceso agrícola con datos, IA y experiencia de campo
+        </motion.p>
+
+        <motion.div 
+          className="ag-search"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.8 }}
+        >
+          <div className="ag-search__inner">
+            <svg className="ag-search__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input
+              className="ag-search__input"
+              placeholder="¿Qué servicio necesitas?"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+            />
+            <motion.button 
+              className="ag-search__btn"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Buscar →
+            </motion.button>
+          </div>
+
+          <motion.div 
+            className="ag-search__tags"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+          >
+            {servicios.map((s, i) => (
+              <motion.button 
+                key={s.slug} 
+                className="ag-tag" 
+                onClick={() => setQuery(s.label)}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.2 + i * 0.1 }}
+                whileHover={{ scale: 1.1, y: -3 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                {s.icon} {s.label}
+              </motion.button>
+            ))}
+          </motion.div>
+        </motion.div>
+
+        <motion.div 
+          className="ag-hero__scroll-indicator"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5 }}
+        >
+          <div className="ag-hero__mouse">
+            <div className="ag-hero__wheel" />
+          </div>
+          <span>Desplázate para explorar</span>
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+}
+
+/* ─── TRUST STRIP ────────────────────────────────────────── */
+function TrustStrip() {
+  const items = [
+    { icon: '🏆', text: 'Mejores prácticas agronómicas' },
+    { icon: '📞', text: 'Soporte 24/7 en campo' },
+    { icon: '⭐', text: 'Miles de agricultores satisfechos' },
+    { icon: '💵', text: 'Precios transparentes' },
+  ];
+
+  return (
+    <motion.div 
+      className="ag-trust"
+      variants={staggerContainer}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: '-50px' }}
+    >
+      {items.map(t => (
+        <motion.div 
+          key={t.text} 
+          className="ag-trust__item"
+          variants={fadeInUp}
+          whileHover={{ y: -5, scale: 1.02 }}
+        >
+          <motion.span 
+            className="ag-trust__icon"
+            whileHover={{ rotate: [0, -10, 10, 0] }}
+            transition={{ duration: 0.5 }}
+          >
+            {t.icon}
+          </motion.span>
+          <span>{t.text}</span>
+        </motion.div>
+      ))}
+    </motion.div>
+  );
+}
+
+/* ─── STATS SECTION ──────────────────────────────────────── */
+function StatsSection() {
+  const stats = [
+    { num: '35+',  lbl: 'Años de experiencia' },
+    { num: '7K+',  lbl: 'Agricultores atendidos' },
+    { num: '500K', lbl: 'Hectáreas gestionadas' },
+    { num: '40+',  lbl: 'Países con presencia' },
+  ];
+
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
+
+  return (
+    <motion.div 
+      ref={ref}
+      className="ag-stats"
+      variants={staggerContainer}
+      initial="hidden"
+      animate={isInView ? 'visible' : 'hidden'}
+    >
+      {stats.map((s, i) => (
+        <motion.div 
+          key={s.lbl} 
+          className="ag-stats__item"
+          variants={scaleIn}
+          whileHover={{ y: -10, scale: 1.05 }}
+          transition={{ delay: i * 0.1 }}
+        >
+          <motion.span 
+            className="ag-stats__num"
+            initial={{ opacity: 0, scale: 0 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ delay: 0.3 + i * 0.15, duration: 0.6, type: 'spring' }}
+          >
+            {s.num}
+          </motion.span>
+          <span className="ag-stats__lbl">{s.lbl}</span>
+        </motion.div>
+      ))}
+    </motion.div>
+  );
+}
+
+/* ─── CULTIVOS SECTION ───────────────────────────────────── */
+function CultivosSection() {
   const destinos = [
     { src: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=800', label: 'Campos de Trigo', tag: 'Cereales' },
     { src: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=800', label: 'Cosecha Fresca',  tag: 'Hortalizas' },
@@ -66,103 +426,228 @@ function HomePage() {
   ];
 
   return (
-    <>
-      {/* HERO */}
-      <section className="ag-hero">
-        <div className="ag-hero__bg">
-          <img src="/palmas-africanas.jpg" alt="Campos agrícolas" />
-          <div className="ag-hero__overlay" />
-        </div>
-
-        <div className="ag-hero__content">
-          <p className="ag-hero__eyebrow">Agricultura Sostenible desde 1989</p>
-          <h1 className="ag-hero__title">Tecnología para<br />el campo colombiano</h1>
-          <p className="ag-hero__sub">Optimizamos cada proceso agrícola con datos, IA y experiencia de campo</p>
-
-          {/* BUSCADOR */}
-          <div className="ag-search">
-            <div className="ag-search__inner">
-              <svg className="ag-search__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-              <input
-                className="ag-search__input"
-                placeholder="¿Qué servicio necesitas?"
-                value={query}
-                onChange={e => setQuery(e.target.value)}
-              />
-              <button className="ag-search__btn">Buscar →</button>
-            </div>
-
-            <div className="ag-search__tags">
-              {servicios.map(s => (
-                <button key={s.slug} className="ag-tag" onClick={() => setQuery(s.label)}>
-                  {s.icon} {s.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* TRUST STRIP */}
-        <div className="ag-trust">
-          {[
-            { icon: '🏆', text: 'Mejores prácticas agronómicas' },
-            { icon: '📞', text: 'Soporte 24/7 en campo' },
-            { icon: '⭐', text: 'Miles de agricultores satisfechos' },
-            { icon: '💵', text: 'Precios transparentes' },
-          ].map(t => (
-            <div key={t.text} className="ag-trust__item">
-              <span>{t.icon}</span>
-              <span>{t.text}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* STATS */}
-      <div className="ag-stats">
-        {[
-          { num: '35+',  lbl: 'Años de experiencia' },
-          { num: '7K+',  lbl: 'Agricultores atendidos' },
-          { num: '500K', lbl: 'Hectáreas gestionadas' },
-          { num: '40+',  lbl: 'Países con presencia' },
-        ].map(s => (
-          <div key={s.lbl} className="ag-stats__item">
-            <span className="ag-stats__num">{s.num}</span>
-            <span className="ag-stats__lbl">{s.lbl}</span>
-          </div>
-        ))}
+    <section className="ag-section ag-section--cultivos">
+      <div className="ag-section__head">
+        <motion.h2
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          Principales cultivos
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+        >
+          Soluciones especializadas según tu tipo de producción
+        </motion.p>
       </div>
 
-      {/* PRINCIPALES CULTIVOS */}
-      <section className="ag-section">
-        <div className="ag-section__head">
-          <h2>Principales cultivos</h2>
-          <p>Soluciones especializadas según tu tipo de producción</p>
-        </div>
-        <div className="ag-cards">
-          {destinos.map(d => (
-            <Link to="/services" key={d.label} className="ag-card">
+      <motion.div 
+        className="ag-cards"
+        variants={staggerContainer}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-50px' }}
+      >
+        {destinos.map((d, i) => (
+          <motion.div
+            key={d.label}
+            variants={fadeInUp}
+            whileHover={{ y: -15, scale: 1.02 }}
+            transition={{ duration: 0.4 }}
+          >
+            <Link to="/services" className="ag-card">
               <div className="ag-card__img">
-                <img src={d.src} alt={d.label} />
-                <span className="ag-card__tag">{d.tag}</span>
+                <motion.img 
+                  src={d.src} 
+                  alt={d.label}
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ duration: 0.6 }}
+                />
+                <motion.span 
+                  className="ag-card__tag"
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 + i * 0.1 }}
+                >
+                  {d.tag}
+                </motion.span>
+                <div className="ag-card__overlay" />
               </div>
-              <div className="ag-card__label">{d.label}</div>
+              <motion.div 
+                className="ag-card__label"
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + i * 0.1 }}
+              >
+                {d.label}
+              </motion.div>
             </Link>
-          ))}
-        </div>
-      </section>
+          </motion.div>
+        ))}
+      </motion.div>
+    </section>
+  );
+}
 
-      {/* CTA BANNER */}
-      <section className="ag-cta-banner">
-        <div className="ag-cta-banner__inner">
-          <h2>¿Listo para transformar tu campo?</h2>
-          <p>Únete a más de 7.000 agricultores que ya confían en AgroSmart</p>
-          <div className="ag-cta-banner__btns">
-            <Link to="/contact"><button className="ag-btn ag-btn--white">Contáctanos</button></Link>
-            <Link to="/services"><button className="ag-btn ag-btn--ghost">Ver servicios →</button></Link>
-          </div>
-        </div>
-      </section>
+/* ─── FEATURES SECTION ───────────────────────────────────── */
+function FeaturesSection() {
+  const features = [
+    { 
+      icon: '🤖', 
+      title: 'Inteligencia Artificial', 
+      desc: 'Algoritmos de aprendizaje automático que analizan patrones climáticos y del suelo para optimizar rendimientos.',
+      color: '#22c55e'
+    },
+    { 
+      icon: '📡', 
+      title: 'IoT en Tiempo Real', 
+      desc: 'Sensores conectados que monitorean humedad, temperatura y nutrientes las 24 horas del día.',
+      color: '#0284c7'
+    },
+    { 
+      icon: '📊', 
+      title: 'Análisis Predictivo', 
+      desc: 'Proyecciones de cosecha basadas en datos históricos y condiciones actuales del mercado.',
+      color: '#d97706'
+    },
+    { 
+      icon: '🌿', 
+      title: 'Sostenibilidad', 
+      desc: 'Prácticas agrícolas que reducen el impacto ambiental y maximizan la eficiencia de recursos.',
+      color: '#059669'
+    },
+  ];
+
+  return (
+    <section className="ag-section ag-section--features">
+      <div className="ag-section__head">
+        <motion.h2
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+        >
+          Tecnología de Vanguardia
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+        >
+          Herramientas innovadoras para la agricultura del futuro
+        </motion.p>
+      </div>
+
+      <div className="ag-features-grid">
+        {features.map((f, i) => (
+          <motion.div
+            key={f.title}
+            className="ag-feature-card"
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: i * 0.15 }}
+            whileHover={{ y: -10, boxShadow: `0 20px 40px ${f.color}20` }}
+          >
+            <motion.div 
+              className="ag-feature-card__icon"
+              style={{ backgroundColor: `${f.color}15`, color: f.color }}
+              whileHover={{ rotate: 360, scale: 1.1 }}
+              transition={{ duration: 0.6 }}
+            >
+              {f.icon}
+            </motion.div>
+            <h3>{f.title}</h3>
+            <p>{f.desc}</p>
+            <motion.div 
+              className="ag-feature-card__glow"
+              style={{ backgroundColor: f.color }}
+            />
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─── CTA BANNER ─────────────────────────────────────────── */
+function CTABanner() {
+  return (
+    <section className="ag-cta-banner">
+      <div className="ag-cta-banner__bg">
+        <img src="https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=1400" alt="" />
+        <div className="ag-cta-banner__overlay" />
+      </div>
+      <motion.div 
+        className="ag-cta-banner__inner"
+        initial={{ opacity: 0, y: 60 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        <motion.h2
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.1 }}
+        >
+          ¿Listo para transformar tu campo?
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+        >
+          Únete a más de 7.000 agricultores que ya confían en AgroSmart
+        </motion.p>
+        <motion.div 
+          className="ag-cta-banner__btns"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, delay: 0.3 }}
+        >
+          <Link to="/contact">
+            <motion.button 
+              className="ag-btn ag-btn--white"
+              whileHover={{ scale: 1.05, boxShadow: '0 10px 30px rgba(255,255,255,0.3)' }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Contáctanos
+            </motion.button>
+          </Link>
+          <Link to="/services">
+            <motion.button 
+              className="ag-btn ag-btn--ghost"
+              whileHover={{ scale: 1.05, x: 5 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Ver servicios →
+            </motion.button>
+          </Link>
+        </motion.div>
+      </motion.div>
+    </section>
+  );
+}
+
+/* ─── HOME ────────────────────────────────────────────────── */
+function HomePage() {
+  return (
+    <>
+      <HeroSection />
+      <TrustStrip />
+      <StatsSection />
+      <CultivosSection />
+      <FeaturesSection />
+      <CTABanner />
     </>
   );
 }
@@ -324,8 +809,20 @@ function AuthModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (u:
   };
 
   return (
-    <div className="ag-modal-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="ag-modal">
+    <motion.div 
+      className="ag-modal-overlay" 
+      onClick={e => e.target === e.currentTarget && onClose()}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div 
+        className="ag-modal"
+        initial={{ opacity: 0, scale: 0.8, y: 50 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.8, y: 50 }}
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+      >
         <button className="ag-modal__close" onClick={onClose}>✕</button>
         <div className="ag-modal__logo">
           <svg width="36" height="36" viewBox="0 0 28 28" fill="none">
@@ -343,9 +840,15 @@ function AuthModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (u:
             {loading ? 'Ingresando...' : 'Ingresar'}
           </button>
         </form>
-        {error && <div className="ag-modal__error">{error}</div>}
-      </div>
-    </div>
+        {error && <motion.div 
+          className="ag-modal__error"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          {error}
+        </motion.div>}
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -393,7 +896,9 @@ function WithLayout({ children, sesion, onLogout, onLogin, modal, onClose, onSuc
       <Navbar sesion={sesion} onLogout={onLogout} onLogin={onLogin} />
       {children}
       <Footer />
-      {modal && <AuthModal onClose={onClose} onSuccess={onSuccess} />}
+      <AnimatePresence>
+        {modal && <AuthModal onClose={onClose} onSuccess={onSuccess} />}
+      </AnimatePresence>
     </>
   );
 }
