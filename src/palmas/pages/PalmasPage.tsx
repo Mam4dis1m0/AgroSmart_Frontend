@@ -2,13 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 
 const API = 'http://localhost:3000';
 
+// ── INTERFACES ───────────────────────────────────────────────────────────────
+// Campos reales que devuelve el backend (palma.entity.ts)
 interface PalmaBackend {
   idpalma: number;
-  codigo: string;
-  edad: number;
-  altura: number;
-  estado: string;
-  fechaultimarevisión?: string;
+  codigo: string | null;
+  variedad: string | null;
+  fechasiembra: string | null;
+  estadosanitario: string | null;
+  observaciones: string | null;
   idlote?: { idlote: number; nombre?: string };
 }
 
@@ -28,9 +30,9 @@ Ayudas a los administradores a gestionar el registro individual de palmas por lo
 Lo que puedes explicar:
 - Cómo registrar una nueva palma (botón "+ Registrar palma")
 - Qué es el código de palma y cómo asignarlo (Ej: PAL-005)
-- Qué significa la edad y la altura de una palma
+- Qué es la variedad de la palma
 - Cómo asignar un lote a una palma
-- Qué significan los estados: Saludable y En observación
+- Qué significa el estado sanitario: Saludable y En observación
 - Cómo usar el análisis de enfermedades con IA (botón "Analizar palma con IA")
 - Cómo interpretar los resultados del diagnóstico de enfermedades
 - Cómo eliminar una palma (botón ✕)
@@ -43,49 +45,37 @@ const GUIA_ITEMS = [
     icon: '＋',
     titulo: 'Registrar palma',
     desc: 'Haz clic en "+ Registrar palma" (arriba a la derecha de la tabla) para añadir una nueva palma al sistema.',
-    color: '#16a34a',
-    bg: '#f0fdf4',
-    border: '#bbf7d0',
+    color: '#16a34a', bg: '#f0fdf4', border: '#bbf7d0',
   },
   {
     icon: '🏷️',
     titulo: 'Código de palma',
     desc: 'Cada palma tiene un código único (Ej: PAL-005). Sirve para identificarla individualmente dentro del lote.',
-    color: '#0369a1',
-    bg: '#f0f9ff',
-    border: '#bae6fd',
+    color: '#0369a1', bg: '#f0f9ff', border: '#bae6fd',
   },
   {
-    icon: '📏',
-    titulo: 'Edad y altura',
-    desc: 'Registra la edad en años y la altura en metros de la palma para llevar un control de su desarrollo y crecimiento.',
-    color: '#b45309',
-    bg: '#fffbeb',
-    border: '#fde68a',
+    icon: '🌴',
+    titulo: 'Variedad',
+    desc: 'Registra la variedad genética de la palma (Ej: Deli x Ghana). Útil para diferenciar comportamientos productivos.',
+    color: '#b45309', bg: '#fffbeb', border: '#fde68a',
   },
   {
     icon: '🌿',
-    titulo: 'Estados de salud',
+    titulo: 'Estado sanitario',
     desc: 'Saludable → la palma está en buen estado. En observación → presenta alguna anomalía que requiere seguimiento.',
-    color: '#7c3aed',
-    bg: '#f5f3ff',
-    border: '#ddd6fe',
+    color: '#7c3aed', bg: '#f5f3ff', border: '#ddd6fe',
   },
   {
     icon: '🤖',
     titulo: 'Análisis con IA',
     desc: 'Sube una foto de la palma y la IA detectará enfermedades o plagas automáticamente usando Kindwise crop.health.',
-    color: '#0f766e',
-    bg: '#f0fdfa',
-    border: '#99f6e4',
+    color: '#0f766e', bg: '#f0fdfa', border: '#99f6e4',
   },
   {
     icon: '✕',
     titulo: 'Eliminar palma',
     desc: 'Usa el botón ✕ al final de cada fila en la tabla para eliminar esa palma del registro.',
-    color: '#dc2626',
-    bg: '#fef2f2',
-    border: '#fecaca',
+    color: '#dc2626', bg: '#fef2f2', border: '#fecaca',
   },
 ];
 
@@ -232,7 +222,6 @@ function AgrobotWidget() {
         .aw-chip:hover { background: #dcfce7; }
       `}</style>
 
-      {/* FAB */}
       <button className="aw-fab" onClick={() => setAbierto(v => !v)} title="AgroBot — Ayuda">
         {abierto
           ? <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -245,7 +234,6 @@ function AgrobotWidget() {
         }
       </button>
 
-      {/* PANEL */}
       {abierto && (
         <div className="aw-panel">
           <div className="aw-header">
@@ -264,12 +252,8 @@ function AgrobotWidget() {
           </div>
 
           <div className="aw-tabs">
-            <button className={`aw-tab ${tab === 'guia' ? 'active' : ''}`} onClick={() => setTab('guia')}>
-              📋 Guía rápida
-            </button>
-            <button className={`aw-tab ${tab === 'chat' ? 'active' : ''}`} onClick={() => setTab('chat')}>
-              💬 Preguntar
-            </button>
+            <button className={`aw-tab ${tab === 'guia' ? 'active' : ''}`} onClick={() => setTab('guia')}>📋 Guía rápida</button>
+            <button className={`aw-tab ${tab === 'chat' ? 'active' : ''}`} onClick={() => setTab('chat')}>💬 Preguntar</button>
           </div>
 
           {tab === 'guia' && (
@@ -363,10 +347,12 @@ export default function Palmas() {
   const [errorIA, setErrorIA]         = useState('');
 
   const [form, setForm] = useState({
-    codigo: '', idlote: '', edad: '', altura: '', estado: 'Saludable',
+    codigo: '', idlote: '', variedad: '', fechasiembra: '',
+    estadosanitario: 'Saludable', observaciones: '',
   });
 
   // ── Cargar palmas ────────────────────────────────────────────────────────
+  // CORREGIDO: URL correcta sin /api/v1 (palmas no tiene globalPrefix)
   const cargarPalmas = async () => {
     try {
       setLoading(true); setError('');
@@ -381,6 +367,7 @@ export default function Palmas() {
   };
 
   // ── Cargar lotes para el select ──────────────────────────────────────────
+  // CORREGIDO: URL correcta sin /api/v1
   const cargarLotes = async () => {
     try {
       const res = await fetch(`${API}/lotes`);
@@ -401,16 +388,17 @@ export default function Palmas() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          codigo:  form.codigo,
-          edad:    form.edad    ? Number(form.edad)   : undefined,
-          altura:  form.altura  ? Number(form.altura) : undefined,
-          estado:  form.estado,
-          idlote:  form.idlote  ? Number(form.idlote) : undefined,
+          codigo:          form.codigo,
+          variedad:        form.variedad      || undefined,
+          fechasiembra:    form.fechasiembra  || undefined,
+          estadosanitario: form.estadosanitario || undefined,
+          observaciones:   form.observaciones  || undefined,
+          idlote:          form.idlote ? Number(form.idlote) : undefined,
         }),
       });
       if (!res.ok) throw new Error('Error al guardar');
       setModal(false);
-      setForm({ codigo: '', idlote: '', edad: '', altura: '', estado: 'Saludable' });
+      setForm({ codigo: '', idlote: '', variedad: '', fechasiembra: '', estadosanitario: 'Saludable', observaciones: '' });
       await cargarPalmas();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al guardar');
@@ -482,10 +470,17 @@ export default function Palmas() {
   };
 
   // ── Métricas ─────────────────────────────────────────────────────────────
+  // CORREGIDO: usa estadosanitario (campo real del backend)
   const total       = palmas.length;
-  const saludables  = palmas.filter(p => p.estado === 'Saludable').length;
-  const observacion = palmas.filter(p => p.estado !== 'Saludable').length;
+  const saludables  = palmas.filter(p => !p.estadosanitario || p.estadosanitario === 'Saludable').length;
+  const observacion = palmas.filter(p => p.estadosanitario && p.estadosanitario !== 'Saludable').length;
   const pctSalud    = total > 0 ? ((saludables / total) * 100).toFixed(1) : '0';
+
+  const inputStyle = {
+    width: '100%', padding: '9px 12px', border: '1.5px solid #e2e8f0',
+    borderRadius: 8, fontSize: 14, color: '#0f172a', outline: 'none',
+    fontFamily: 'inherit', boxSizing: 'border-box' as const,
+  };
 
   return (
     <>
@@ -501,9 +496,9 @@ export default function Palmas() {
       {/* MÉTRICAS */}
       <div className="metrics" style={{ gridTemplateColumns: 'repeat(3,1fr)' }}>
         {[
-          { lbl: 'Total palmas',    val: total.toLocaleString(),       sub: 'En todos los lotes', color: '' },
-          { lbl: 'Saludables',      val: saludables.toLocaleString(),  sub: `${pctSalud}%`,       color: '#90cc00' },
-          { lbl: 'En observación',  val: observacion.toLocaleString(), sub: `${total > 0 ? (100 - Number(pctSalud)).toFixed(1) : 0}%`, color: '#f0c000' },
+          { lbl: 'Total palmas',   val: total.toLocaleString(),       sub: 'En todos los lotes', color: '' },
+          { lbl: 'Saludables',     val: saludables.toLocaleString(),  sub: `${pctSalud}%`,       color: '#90cc00' },
+          { lbl: 'En observación', val: observacion.toLocaleString(), sub: `${total > 0 ? (100 - Number(pctSalud)).toFixed(1) : 0}%`, color: '#f0c000' },
         ].map(m => (
           <div className="metric-card" key={m.lbl}>
             <div className="metric-label">{m.lbl}</div>
@@ -541,16 +536,33 @@ export default function Palmas() {
         ) : (
           <table>
             <thead>
-              <tr><th>Código</th><th>Lote</th><th>Edad (años)</th><th>Altura (m)</th><th>Estado</th><th></th></tr>
+              {/* CORREGIDO: encabezados con campos reales del backend */}
+              <tr>
+                <th>Código</th>
+                <th>Lote</th>
+                <th>Variedad</th>
+                <th>Fecha siembra</th>
+                <th>Estado sanitario</th>
+                <th></th>
+              </tr>
             </thead>
             <tbody>
               {palmas.map(p => (
                 <tr key={p.idpalma}>
-                  <td style={{ color: 'black', fontFamily: 'monospace' }}>{p.codigo}</td>
+                  {/* CORREGIDO: campos reales del backend */}
+                  <td style={{ color: 'black', fontFamily: 'monospace' }}>{p.codigo ?? '—'}</td>
                   <td style={{ color: 'black' }}>{p.idlote?.nombre ?? `Lote ${p.idlote?.idlote ?? '—'}`}</td>
-                  <td style={{ color: 'black' }}>{p.edad ?? '—'}</td>
-                  <td style={{ color: 'black' }}>{p.altura ?? '—'}</td>
-                  <td><span className={`badge ${p.estado === 'Saludable' ? 'badge-green' : 'badge-yellow'}`}>{p.estado}</span></td>
+                  <td style={{ color: 'black' }}>{p.variedad ?? '—'}</td>
+                  <td style={{ color: 'black' }}>{p.fechasiembra ?? '—'}</td>
+                  <td>
+                    <span className={`badge ${
+                      !p.estadosanitario || p.estadosanitario === 'Saludable'
+                        ? 'badge-green'
+                        : 'badge-yellow'
+                    }`}>
+                      {p.estadosanitario ?? 'Saludable'}
+                    </span>
+                  </td>
                   <td><button className="act-btn" onClick={() => eliminar(p.idpalma)}>✕</button></td>
                 </tr>
               ))}
@@ -560,73 +572,88 @@ export default function Palmas() {
       </div>
 
       {/* MODAL REGISTRAR */}
-      {modal && (() => {
-        const inputStyle = {
-          width: '100%', padding: '9px 12px', border: '1.5px solid #e2e8f0',
-          borderRadius: 8, fontSize: 14, color: '#0f172a', outline: 'none',
-          fontFamily: 'inherit', boxSizing: 'border-box' as const,
-        };
-        return (
-          <div
-            onClick={e => e.target === e.currentTarget && setModal(false)}
-            style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,.5)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 300, padding: '1rem' }}
-          >
-            <div style={{ background: '#fff', borderRadius: 18, padding: 28, width: '100%', maxWidth: 460, display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 12px 40px rgba(0,0,0,.15)' }}>
-              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: 0 }}>REGISTRAR PALMA</h3>
+      {modal && (
+        <div
+          onClick={e => e.target === e.currentTarget && setModal(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,.5)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 300, padding: '1rem' }}
+        >
+          <div style={{ background: '#fff', borderRadius: 18, padding: 28, width: '100%', maxWidth: 460, display: 'flex', flexDirection: 'column', gap: 14, boxShadow: '0 12px 40px rgba(0,0,0,.15)' }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#0f172a', margin: 0 }}>REGISTRAR PALMA</h3>
 
-              <input
-                placeholder="Código (Ej: PAL-005) *"
-                value={form.codigo}
-                onChange={e => setForm({ ...form, codigo: e.target.value })}
-                style={inputStyle}
-              />
+            <input
+              placeholder="Código (Ej: PAL-005) *"
+              value={form.codigo}
+              onChange={e => setForm({ ...form, codigo: e.target.value })}
+              style={inputStyle}
+            />
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <label style={{ fontSize: 12, color: '#64748b' }}>Edad en años</label>
-                  <input
-                    type="number"
-                    placeholder="Ej: 3"
-                    value={form.edad}
-                    onChange={e => setForm({ ...form, edad: e.target.value })}
-                    style={{ ...inputStyle, width: 'auto' }}
-                  />
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                  <label style={{ fontSize: 12, color: '#64748b' }}>Altura en m</label>
-                  <input
-                    type="number"
-                    placeholder="Ej: 7"
-                    value={form.altura}
-                    onChange={e => setForm({ ...form, altura: e.target.value })}
-                    style={{ ...inputStyle, width: 'auto' }}
-                  />
-                </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <label style={{ fontSize: 12, color: '#64748b' }}>Variedad</label>
+                <input
+                  placeholder="Ej: Deli x Ghana"
+                  value={form.variedad}
+                  onChange={e => setForm({ ...form, variedad: e.target.value })}
+                  style={{ ...inputStyle, width: 'auto' }}
+                />
               </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                <select value={form.estado} onChange={e => setForm({ ...form, estado: e.target.value })} style={{ ...inputStyle, width: 'auto' }}>
-                  <option>Saludable</option>
-                  <option>En observación</option>
-                </select>
-                <select value={form.idlote} onChange={e => setForm({ ...form, idlote: e.target.value })} style={{ ...inputStyle, width: 'auto' }}>
-                  <option value="">— Seleccionar lote —</option>
-                  {lotes.map(l => <option key={l.idlote} value={l.idlote}>{l.nombre}</option>)}
-                </select>
-              </div>
-
-              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
-                <button onClick={() => setModal(false)} disabled={saving} style={{ padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: '1.5px solid #e2e8f0', color: '#475569', background: 'transparent', cursor: 'pointer', fontFamily: 'inherit' }}>
-                  Cancelar
-                </button>
-                <button onClick={guardar} disabled={saving} style={{ padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, background: '#16a34a', color: '#fff', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1, fontFamily: 'inherit' }}>
-                  {saving ? 'Guardando...' : 'Guardar'}
-                </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <label style={{ fontSize: 12, color: '#64748b' }}>Fecha de siembra</label>
+                <input
+                  type="date"
+                  value={form.fechasiembra}
+                  onChange={e => setForm({ ...form, fechasiembra: e.target.value })}
+                  style={{ ...inputStyle, width: 'auto' }}
+                />
               </div>
             </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <select
+                value={form.estadosanitario}
+                onChange={e => setForm({ ...form, estadosanitario: e.target.value })}
+                style={{ ...inputStyle, width: 'auto' }}
+              >
+                <option value="Saludable">Saludable</option>
+                <option value="En observación">En observación</option>
+              </select>
+              <select
+                value={form.idlote}
+                onChange={e => setForm({ ...form, idlote: e.target.value })}
+                style={{ ...inputStyle, width: 'auto' }}
+              >
+                <option value="">— Seleccionar lote —</option>
+                {lotes.map(l => <option key={l.idlote} value={l.idlote}>{l.nombre}</option>)}
+              </select>
+            </div>
+
+            <textarea
+              placeholder="Observaciones (opcional)"
+              value={form.observaciones}
+              onChange={e => setForm({ ...form, observaciones: e.target.value })}
+              rows={2}
+              style={{ ...inputStyle, resize: 'vertical' }}
+            />
+
+            <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
+              <button
+                onClick={() => setModal(false)}
+                disabled={saving}
+                style={{ padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: '1.5px solid #e2e8f0', color: '#475569', background: 'transparent', cursor: 'pointer', fontFamily: 'inherit' }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={guardar}
+                disabled={saving}
+                style={{ padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, background: '#16a34a', color: '#fff', border: 'none', cursor: saving ? 'not-allowed' : 'pointer', opacity: saving ? 0.6 : 1, fontFamily: 'inherit' }}
+              >
+                {saving ? 'Guardando...' : 'Guardar'}
+              </button>
+            </div>
           </div>
-        );
-      })()}
+        </div>
+      )}
 
       {/* MODAL IA */}
       {modalIA && (
@@ -677,10 +704,17 @@ export default function Palmas() {
             )}
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 4 }}>
-              <button onClick={() => setModalIA(false)} style={{ padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: '1.5px solid #e2e8f0', color: '#475569', background: 'transparent', cursor: 'pointer', fontFamily: 'inherit' }}>
+              <button
+                onClick={() => setModalIA(false)}
+                style={{ padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: '1.5px solid #e2e8f0', color: '#475569', background: 'transparent', cursor: 'pointer', fontFamily: 'inherit' }}
+              >
                 Cerrar
               </button>
-              <button onClick={analizarPalma} disabled={!imagenFile || analizando} style={{ padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, background: '#16a34a', color: '#fff', border: 'none', cursor: (!imagenFile || analizando) ? 'not-allowed' : 'pointer', opacity: (!imagenFile || analizando) ? 0.5 : 1, fontFamily: 'inherit' }}>
+              <button
+                onClick={analizarPalma}
+                disabled={!imagenFile || analizando}
+                style={{ padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, background: '#16a34a', color: '#fff', border: 'none', cursor: (!imagenFile || analizando) ? 'not-allowed' : 'pointer', opacity: (!imagenFile || analizando) ? 0.5 : 1, fontFamily: 'inherit' }}
+              >
                 {analizando ? 'Analizando...' : 'Analizar con IA'}
               </button>
             </div>
