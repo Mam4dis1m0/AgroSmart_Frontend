@@ -489,6 +489,55 @@ export default function Palmas() {
 
   return (
     <>
+      <style>{`
+        .add-btn {
+          padding: 10px 18px;
+          border-radius: 999px;
+          border: none;
+          font-weight: 700;
+          font-size: 14px;
+          color: #ffffff;
+          background: linear-gradient(135deg, #16a34a, #059669);
+          box-shadow: 0 14px 32px rgba(22, 163, 74, 0.2);
+          cursor: pointer;
+          transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .add-btn:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 18px 38px rgba(22, 163, 74, 0.24);
+        }
+        .add-btn:active {
+          transform: translateY(0);
+        }
+        .act-btn {
+          width: 38px;
+          height: 38px;
+          min-width: 38px;
+          border-radius: 50%;
+          border: 1px solid rgba(239, 68, 68, 0.25);
+          background: #fee2e2;
+          color: #b91c1c;
+          font-weight: 700;
+          font-size: 14px;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+        }
+        .act-btn:hover {
+          background: #fecaca;
+          border-color: #f87171;
+          transform: scale(1.06);
+          box-shadow: 0 0 0 4px rgba(248, 113, 113, 0.12);
+        }
+        .act-btn:active {
+          transform: scale(0.96);
+        }
+      `}</style>
       <p className="page-title">Gestión de Palmas</p>
       <p className="page-sub">Registro individual de palmas por lote</p>
 
