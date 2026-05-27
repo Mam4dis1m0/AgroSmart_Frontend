@@ -428,43 +428,59 @@ function StatsSection() {
 // ------------------------------------------------------------------
 function CultivosSection() {
   const destinos = [
-    { src: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=800', label: 'Campos de Trigo', tag: 'Cereales' },
-    { src: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=800', label: 'Cosecha Fresca', tag: 'Hortalizas' },
-    { src: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=800', label: 'Maquinaria Moderna', tag: 'Tecnología' },
-    { src: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?q=80&w=800', label: 'Precisión Aérea', tag: 'Drones' },
-    { src: 'https://images.unsplash.com/photo-1611735341450-74d61e660ad2?q=80&w=800', label: 'Invernaderos Inteligentes', tag: 'Smart Farm' },
-    { src: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=800', label: 'Cultivo de Girasoles', tag: 'Oleaginosas' },
+    { src: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=800', label: 'Campos de Trigo', tag: 'Cereales', icon: '🌾' },
+    { src: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=800', label: 'Cosecha Fresca', tag: 'Hortalizas', icon: '🥬' },
+    { src: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=800', label: 'Maquinaria Moderna', tag: 'Tecnología', icon: '🚜' },
+    { src: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?q=80&w=800', label: 'Precisión Aérea', tag: 'Drones', icon: '✈️' },
+    { src: 'https://images.unsplash.com/photo-1611735341450-74d61e660ad2?q=80&w=800', label: 'Invernaderos Inteligentes', tag: 'Smart Farm', icon: '🌿' },
+    { src: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=800', label: 'Cultivo de Girasoles', tag: 'Oleaginosas', icon: '🌻' },
   ];
 
   return (
     <section className="ag-section ag-section--cultivos">
       <div className="ag-section__head">
-        <motion.h2 initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }}>
+        <motion.h2 
+          initial={{ opacity: 0, y: 40 }} 
+          whileInView={{ opacity: 1, y: 0 }} 
+          viewport={{ once: true }} 
+          transition={{ duration: 0.7 }}
+        >
           Principales cultivos
         </motion.h2>
-        <motion.p initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7, delay: 0.1 }}>
-          Soluciones especializadas según tu tipo de producción
+        <motion.p 
+          initial={{ opacity: 0, y: 30 }} 
+          whileInView={{ opacity: 1, y: 0 }} 
+          viewport={{ once: true }} 
+          transition={{ duration: 0.7, delay: 0.1 }}
+        >
+          Pasa el mouse sobre cada imagen para ver más detalles
         </motion.p>
       </div>
 
-      <motion.div className="ag-cards" variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-50px' }}>
+      <div className="ag-cards-horizontal">
         {destinos.map((d, i) => (
-          <motion.div key={d.label} variants={fadeInUp} whileHover={{ y: -15, scale: 1.02 }}>
-            <Link to="/services" className="ag-card">
-              <div className="ag-card__img">
-                <motion.img src={d.src} alt={d.label} whileHover={{ scale: 1.1 }} transition={{ duration: 0.6 }} />
-                <motion.span className="ag-card__tag" initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.1 }}>
-                  {d.tag}
-                </motion.span>
-                <div className="ag-card__overlay" />
-              </div>
-              <motion.div className="ag-card__label" initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.1 }}>
+          <motion.div
+            key={d.label}
+            className="ag-card-expanding"
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: i * 0.1 }}
+          >
+            <div className="ag-card-expanding__img">
+              <img src={d.src} alt={d.label} loading="lazy" />
+              <div className="ag-card-expanding__overlay" />
+              <span className="ag-card-expanding__tag">{d.tag}</span>
+              <div className="ag-card-expanding__label">
                 {d.label}
-              </motion.div>
-            </Link>
+              </div>
+              <div className="ag-card-expanding__badge">
+                {d.icon}
+              </div>
+            </div>
           </motion.div>
         ))}
-      </motion.div>
+      </div>
     </section>
   );
 }
@@ -549,6 +565,82 @@ function HomePage() {
     <>
       <HeroSection />
       <ProblemSolution />
+      
+      {/* SECCIÓN OFFLINE FIRST - CON ANIMACIONES  */}
+      <motion.section 
+        className="ag-offline-section"
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.8 }}
+      >
+        <div className="ag-offline-grid">
+          <motion.div 
+            className="ag-offline-content"
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <motion.span 
+              className="ag-offline-badge"
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              Modo Offline
+            </motion.span>
+            <h2>Tu campo, siempre conectado <span>incluso sin internet</span></h2>
+            <p>Sabemos que en zonas rurales la señal falla. Por eso AgroSmart fue construido desde cero para funcionar sin conexión. Tomas notas, asignas tareas, controlas inventario... y cuando vuelves a tener señal, todo se sincroniza automáticamente.</p>
+            
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <div className="ag-offline-feature">
+                <span className="check">✓</span> 
+                <span><strong>Sincronización inteligente</strong> — Trabaja offline, sincroniza cuando recuperes datos móviles o wifi</span>
+              </div>
+              <div className="ag-offline-feature">
+                <span className="check">✓</span> 
+                <span><strong>Alertas automáticas por email</strong> — Nosotros enviamos los reportes de stock bajo, tareas vencidas y cosechas próximas. Tú solo preocúpate de cultivar.</span>
+              </div>
+              <div className="ag-offline-feature">
+                <span className="check">✓</span> 
+                <span><strong>Cero pérdida de datos</strong> — Tu información se guarda localmente y se respalda en la nube cuando hay conexión.</span>
+              </div>
+            </motion.div>
+          </motion.div>
+          
+          <motion.div 
+            className="ag-offline-visual"
+            initial={{ opacity: 0, x: 50, scale: 0.95 }}
+            whileInView={{ opacity: 1, x: 0, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            whileHover={{ y: -8, transition: { duration: 0.2 } }}
+          >
+            <motion.div 
+              className="icon"
+              animate={{ y: [0, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            >
+              📡
+            </motion.div>
+            <h3>Modo <strong style={{ color: '#22c55e' }}>Offline</strong> activado</h3>
+            <p>Sigue trabajando aunque no tengas señal. Tus datos están seguros en tu dispositivo hasta que se sincronicen.</p>
+            <div className="ag-offline-tags">
+              <span className="ag-offline-tag">📱 App offline</span>
+              <span className="ag-offline-tag">🔄 Sincronización automática</span>
+              <span className="ag-offline-tag">📧 Alertas por email</span>
+            </div>
+          </motion.div>
+        </div>
+      </motion.section>
+      
       <TrustStrip />
       <StatsSection />
       <CultivosSection />
@@ -563,7 +655,7 @@ function HomePage() {
 // ------------------------------------------------------------------
 function AboutPage() {
   return (
-    <div className="ag-inner">
+    <div className="ag-inner-page">
       <div className="ag-page-hero" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=1400)' }}>
         <div className="ag-page-hero__overlay" />
         <div className="ag-page-hero__text">
@@ -572,31 +664,81 @@ function AboutPage() {
         </div>
       </div>
 
-      <div className="ag-about-cards">
-        <div className="ag-about-card">
-          <span className="ag-about-icon">🌱</span>
-          <h3>Misión</h3>
-          <p>Empoderar a los productores agrícolas con tecnología accesible que optimice sus recursos y aumente su rentabilidad sostenible.</p>
+      <div className="ag-page-content">
+        <div className="ag-about-cards">
+          <motion.div 
+            className="ag-about-card"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <span className="ag-about-icon">🌱</span>
+            <h3>Misión</h3>
+            <p>Empoderar a los productores agrícolas con tecnología accesible que optimice sus recursos y aumente su rentabilidad sostenible, incluso en zonas remotas.</p>
+          </motion.div>
+          <motion.div 
+            className="ag-about-card"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            <span className="ag-about-icon">🔭</span>
+            <h3>Visión</h3>
+            <p>Ser la plataforma líder en gestión agrícola inteligente de Latinoamérica, transformando el campo con IA, datos en tiempo real y tecnología offline-first.</p>
+          </motion.div>
+          <motion.div 
+            className="ag-about-card"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <span className="ag-about-icon">⭐</span>
+            <h3>Valores</h3>
+            <p>Innovación, sostenibilidad, transparencia y compromiso con el agricultor colombiano. La tecnología debe adaptarse al campo, no al revés.</p>
+          </motion.div>
         </div>
-        <div className="ag-about-card">
-          <span className="ag-about-icon">🔭</span>
-          <h3>Visión</h3>
-          <p>Ser la plataforma líder en gestión agrícola inteligente de Latinoamérica, transformando el campo con IA y datos en tiempo real.</p>
-        </div>
-        <div className="ag-about-card">
-          <span className="ag-about-icon">⭐</span>
-          <h3>Valores</h3>
-          <p>Innovación, sostenibilidad, transparencia y compromiso con el agricultor colombiano.</p>
-        </div>
-      </div>
 
-      <div className="ag-about-team">
-        <h2>Nuestro equipo</h2>
-        <p>Más de 120 especialistas entre ingenieros agrónomos, desarrolladores y expertos en IA trabajando para ti.</p>
-        <div className="ag-team-grid">
-          <div className="ag-team-member"><img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Fundador" /><h4>Juan Pérez</h4><span>CEO & Fundador</span></div>
-          <div className="ag-team-member"><img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Agrónoma" /><h4>María Gómez</h4><span>Directora Agronómica</span></div>
-          <div className="ag-team-member"><img src="https://randomuser.me/api/portraits/men/75.jpg" alt="CTO" /><h4>Carlos López</h4><span>CTO</span></div>
+        <div className="ag-about-team">
+          <h2>Nuestro equipo</h2>
+          <p>Más de 120 especialistas entre ingenieros agrónomos, desarrolladores y expertos en IA trabajando para ti.</p>
+          <div className="ag-team-grid">
+            <motion.div 
+              className="ag-team-member"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+            >
+              <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Fundador" />
+              <h4>Juan Pérez</h4>
+              <span>CEO & Fundador</span>
+            </motion.div>
+            <motion.div 
+              className="ag-team-member"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Agrónoma" />
+              <h4>María Gómez</h4>
+              <span>Directora Agronómica</span>
+            </motion.div>
+            <motion.div 
+              className="ag-team-member"
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
+              <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="CTO" />
+              <h4>Carlos López</h4>
+              <span>CTO</span>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>
@@ -608,31 +750,43 @@ function AboutPage() {
 // ------------------------------------------------------------------
 function ServicesPage() {
   const services = [
-    { icon: '🌱', title: 'Gestión de Cultivos', desc: 'Registra lotes, fechas de siembra, cosecha estimada y asigna responsables.', color: '#16a34a' },
-    { icon: '✅', title: 'Control de Tareas', desc: 'Crea tareas agrícolas, asígnalas a empleados y monitorea avances y horas trabajadas.', color: '#0284c7' },
-    { icon: '📦', title: 'Inventario de Insumos', desc: 'Control de fertilizantes, herbicidas con alertas automáticas de stock bajo.', color: '#7c3aed' },
-    { icon: '📅', title: 'Registro de Cosechas', desc: 'Historial de producción por lote y alertas de cosecha próxima.', color: '#b91c1c' },
-    { icon: '📊', title: 'Reportes y KPIs', desc: 'Visualiza costos, productividad, eficiencia de tareas en tiempo real.', color: '#d97706' },
-    { icon: '🔔', title: 'Alertas Automáticas', desc: 'Notificaciones por stock mínimo, fechas críticas y tareas atrasadas.', color: '#059669' },
+    { icon: '🌱', title: 'Gestión de Cultivos', desc: 'Registra lotes, fechas de siembra, cosecha estimada y asigna responsables. Todo sincronizado cuando tengas señal.' },
+    { icon: '✅', title: 'Control de Tareas', desc: 'Crea tareas agrícolas, asígnalas a empleados y monitorea avances y horas trabajadas, incluso sin internet.' },
+    { icon: '📦', title: 'Inventario de Insumos', desc: 'Control de fertilizantes, herbicidas con alertas automáticas de stock bajo. Funciona offline y se sincroniza después.' },
+    { icon: '📅', title: 'Registro de Cosechas', desc: 'Historial de producción por lote y alertas de cosecha próxima. Tus datos siempre seguros.' },
+    { icon: '📊', title: 'Reportes y KPIs', desc: 'Visualiza costos, productividad, eficiencia de tareas en tiempo real cuando recuperes conectividad.' },
+    { icon: '🔔', title: 'Alertas Automáticas', desc: 'Notificaciones por stock mínimo, fechas críticas y tareas atrasadas. Nosotros enviamos los emails automáticamente.' },
   ];
+  
   return (
-    <div className="ag-inner">
+    <div className="ag-inner-page">
       <div className="ag-page-hero" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1586771107445-d3ca888129ce?q=80&w=1400)' }}>
         <div className="ag-page-hero__overlay" />
         <div className="ag-page-hero__text">
           <h1>Nuestros servicios</h1>
-          <p>Soluciones agrícolas integrales para cada necesidad</p>
+          <p>Soluciones agrícolas integrales que funcionan CON o SIN internet</p>
         </div>
       </div>
-      <div className="ag-services-grid">
-        {services.map(s => (
-          <div className="ag-service-card" key={s.title} style={{ '--accent': s.color } as any}>
-            <span className="ag-service-card__icon">{s.icon}</span>
-            <h3>{s.title}</h3>
-            <p>{s.desc}</p>
-            <span className="ag-service-card__arrow">→</span>
-          </div>
-        ))}
+      
+      <div className="ag-page-content">
+        <div className="ag-services-grid">
+          {services.map((s, idx) => (
+            <motion.div 
+              className="ag-service-card" 
+              key={s.title}
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
+              whileHover={{ y: -10 }}
+            >
+              <span className="ag-service-card__icon">{s.icon}</span>
+              <h3>{s.title}</h3>
+              <p>{s.desc}</p>
+              <span className="ag-service-card__arrow">Explorar →</span>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -643,29 +797,55 @@ function ServicesPage() {
 // ------------------------------------------------------------------
 function GalleryPage() {
   const photos = [
-    { src: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=600', label: 'Campos de Trigo' },
-    { src: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=600', label: 'Vegetales Frescos' },
-    { src: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=600', label: 'Tractor Moderno' },
-    { src: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?q=80&w=600', label: 'Vista Aérea' },
-    { src: 'https://images.unsplash.com/photo-1611735341450-74d61e660ad2?q=80&w=600', label: 'Invernadero Inteligente' },
-    { src: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=600', label: 'Girasoles' },
-    { src: 'https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=600', label: 'Cosecha' },
-    { src: 'https://images.unsplash.com/photo-1586771107445-d3ca888129ce?q=80&w=600', label: 'Dron en Campo' },
-    { src: 'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?q=80&w=600', label: 'Cultivos Orgánicos' },
+    { src: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=800', label: 'Campos de Trigo', icon: '🌾' },
+    { src: 'https://images.unsplash.com/photo-1464226184884-fa280b87c399?q=80&w=800', label: 'Vegetales Frescos', icon: '🥬' },
+    { src: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=800', label: 'Tractor Moderno', icon: '🚜' },
+    { src: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d?q=80&w=800', label: 'Vista Aérea con Drone', icon: '✈️' },
+    { src: 'https://images.unsplash.com/photo-1611735341450-74d61e660ad2?q=80&w=800', label: 'Invernadero Inteligente', icon: '🌿' },
+    { src: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=800', label: 'Girasoles', icon: '🌻' },
+    { src: 'https://images.unsplash.com/photo-1550989460-0adf9ea622e2?q=80&w=800', label: 'Cosecha', icon: '🌽' },
+    { src: 'https://images.unsplash.com/photo-1586771107445-d3ca888129ce?q=80&w=800', label: 'Dron en Campo', icon: '📡' },
+    { src: 'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?q=80&w=800', label: 'Cultivos Orgánicos', icon: '🍅' },
   ];
+  
   return (
-    <div className="ag-inner">
-      <div className="ag-section__head" style={{ padding: '3rem 2rem 1rem' }}>
-        <h2>Galería</h2>
-        <p>Momentos del campo — donde la naturaleza se une a la innovación</p>
+    <div className="ag-inner-page">
+      <div className="ag-page-hero" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1592982537447-7440770cbfc9?q=80&w=1400)' }}>
+        <div className="ag-page-hero__overlay" />
+        <div className="ag-page-hero__text">
+          <h1>Galería</h1>
+          <p>Momentos del campo — donde la naturaleza se une a la innovación</p>
+        </div>
       </div>
-      <div className="ag-gallery-grid">
-        {photos.map(p => (
-          <div className="ag-gallery-item" key={p.label}>
-            <img src={p.src} alt={p.label} />
-            <div className="ag-gallery-item__label">{p.label}</div>
-          </div>
-        ))}
+      
+      <div className="ag-gallery-expanding-section">
+        <div className="ag-gallery-header">
+          <h2>Nuestro mundo agrícola</h2>
+          <p>Pasa el mouse sobre cada imagen para explorar</p>
+        </div>
+        
+        <div className="ag-gallery-horizontal">
+          {photos.map((p, idx) => (
+            <motion.div
+              key={p.label}
+              className="ag-gallery-card"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: idx * 0.05 }}
+            >
+              <div className="ag-gallery-card__img">
+                <img src={p.src} alt={p.label} loading="lazy" />
+                <div className="ag-gallery-card__overlay" />
+                <div className="ag-gallery-card__label">{p.label}</div>
+                <div className="ag-gallery-card__icon">{p.icon}</div>
+                <div className="ag-gallery-card__counter">
+                  {(idx + 1).toString().padStart(2, '0')}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -681,47 +861,63 @@ function ContactPage() {
     (e.target as HTMLFormElement).reset();
     setTimeout(() => setSent(false), 5000);
   };
+  
   return (
-    <div className="ag-inner">
+    <div className="ag-inner-page">
       <div className="ag-page-hero" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1592982537447-7440770cbfc9?q=80&w=1400)' }}>
         <div className="ag-page-hero__overlay" />
         <div className="ag-page-hero__text">
           <h1>Contáctanos</h1>
-          <p>Construyamos algo grande juntos</p>
+          <p>Estamos listos para ayudarte a transformar tu campo</p>
         </div>
       </div>
+      
+      <div className="ag-page-content">
+        <div className="ag-contact-grid">
+          <motion.div 
+            className="ag-contact-info"
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h3>¿Hablamos?</h3>
+            <p>Ya sea que tengas 1 hectárea o 10,000, tenemos una solución para ti. Déjanos tus datos y uno de nuestros asesores te contactará.</p>
+            <div className="ag-contact-details">
+              <div className="ag-contact-detail"><span className="ag-contact-icon">📍</span> Calle 15 # 8-45, Valledupar, Cesar</div>
+              <div className="ag-contact-detail"><span className="ag-contact-icon">📞</span> +57 (5) 321 456 7890</div>
+              <div className="ag-contact-detail"><span className="ag-contact-icon">✉️</span> hola@agrosmart.co</div>
+              <div className="ag-contact-detail"><span className="ag-contact-icon">🕐</span> Lun – Vie, 8:00 AM – 6:00 PM</div>
+            </div>
+            <div className="ag-contact-map">
+              <iframe
+                title="mapa"
+                src="https://www.openstreetmap.org/export/embed.html?bbox=-73.235%2C10.41%2C-73.155%2C10.46&layer=mapnik&marker=10.435%2C-73.195"
+                width="100%"
+                height="220"
+                style={{ border: 0, borderRadius: '16px' }}
+                allowFullScreen
+              />
+            </div>
+          </motion.div>
 
-      <div className="ag-contact-grid">
-        <div className="ag-contact-info">
-          <h3>Comunícate con nosotros</h3>
-          <p>Ya seas una pequeña finca o una gran agroindustria, estamos listos para ayudarte.</p>
-          <div className="ag-contact-details">
-            <div className="ag-contact-detail"><span className="ag-contact-icon">📍</span> Calle 15 # 8-45, Valledupar, Cesar</div>
-            <div className="ag-contact-detail"><span className="ag-contact-icon">📞</span> +57 (5) 321 456 7890</div>
-            <div className="ag-contact-detail"><span className="ag-contact-icon">✉️</span> hola@agrosmart.co</div>
-            <div className="ag-contact-detail"><span className="ag-contact-icon">🕐</span> Lun – Vie, 8:00 AM – 6:00 PM</div>
-          </div>
-          <div className="ag-contact-map">
-            <iframe
-              title="mapa"
-              src="https://www.openstreetmap.org/export/embed.html?bbox=-73.235%2C10.41%2C-73.155%2C10.46&layer=mapnik&marker=10.435%2C-73.195"
-              width="100%"
-              height="220"
-              style={{ border: 0, borderRadius: '16px' }}
-              allowFullScreen
-            />
-          </div>
+          <motion.form 
+            className="ag-contact-form" 
+            onSubmit={handleSubmit}
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h3>Envíanos un mensaje</h3>
+            <input type="text" placeholder="Tu nombre completo" required />
+            <input type="email" placeholder="Correo electrónico" required />
+            <input type="text" placeholder="Empresa / Nombre de la finca" />
+            <textarea placeholder="¿Cómo podemos ayudarte?" rows={5} required />
+            <button type="submit" className="ag-btn ag-btn--primary ag-btn--full">Enviar mensaje</button>
+            {sent && <div className="ag-success">✅ Mensaje enviado. Te responderemos en menos de 24 horas.</div>}
+          </motion.form>
         </div>
-
-        <form className="ag-contact-form" onSubmit={handleSubmit}>
-          <h3>Envíanos un mensaje</h3>
-          <input type="text" placeholder="Tu nombre completo" required />
-          <input type="email" placeholder="Correo electrónico" required />
-          <input type="text" placeholder="Empresa / Nombre de la finca" />
-          <textarea placeholder="¿Cómo podemos ayudarte?" rows={5} required />
-          <button type="submit" className="ag-btn ag-btn--primary ag-btn--full">Enviar mensaje</button>
-          {sent && <div className="ag-success">✅ Mensaje enviado. Te responderemos en menos de 24 horas.</div>}
-        </form>
       </div>
     </div>
   );
@@ -735,42 +931,180 @@ function AuthModal({ onClose, onSuccess }: { onClose: () => void; onSuccess: (u:
   const [pass, setPass] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showRecovery, setShowRecovery] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState('');
+  const [recoverySent, setRecoverySent] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault(); setError(''); setLoading(true);
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
     try {
       const response = await authService.login(email, pass);
       onSuccess(response.usuario);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Credenciales incorrectas');
       setTimeout(() => setError(''), 3000);
-    } finally { setLoading(false); }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRecovery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      setRecoverySent(true);
+      setLoading(false);
+      setTimeout(() => {
+        setShowRecovery(false);
+        setRecoverySent(false);
+        setRecoveryEmail('');
+      }, 3000);
+    }, 1500);
   };
 
   return (
-    <motion.div className="ag-modal-overlay" onClick={e => e.target === e.currentTarget && onClose()} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <motion.div className="ag-modal" initial={{ opacity: 0, scale: 0.8, y: 50 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.8, y: 50 }} transition={{ type: 'spring', damping: 25, stiffness: 300 }}>
+    <motion.div 
+      className="ag-modal-overlay" 
+      onClick={e => e.target === e.currentTarget && onClose()} 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      exit={{ opacity: 0 }}
+    >
+      <motion.div 
+        className="ag-modal ag-modal--login" 
+        initial={{ opacity: 0, scale: 0.8, y: 50 }} 
+        animate={{ opacity: 1, scale: 1, y: 0 }} 
+        exit={{ opacity: 0, scale: 0.8, y: 50 }} 
+        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+      >
         <button className="ag-modal__close" onClick={onClose}>✕</button>
+        
         <div className="ag-modal__logo">
-          <svg width="36" height="36" viewBox="0 0 28 28" fill="none">
-            <circle cx="14" cy="14" r="14" fill="#22c55e" />
-            <path d="M14 6c0 0-6 4-6 9a6 6 0 0012 0c0-5-6-9-6-9z" fill="#fff" fillOpacity=".9" />
-          </svg>
+          <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.6 }}>
+            <svg width="45" height="45" viewBox="0 0 28 28" fill="none">
+              <circle cx="14" cy="14" r="14" fill="#22c55e" />
+              <path d="M14 6c0 0-6 4-6 9a6 6 0 0012 0c0-5-6-9-6-9z" fill="#fff" fillOpacity=".9" />
+              <path d="M14 12v8M11 16l3-4 3 4" stroke="#16a34a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </motion.div>
           <span>AgroSmart</span>
         </div>
-        <h3>Bienvenido de vuelta</h3>
-        <p className="ag-modal__sub">Ingresa tus credenciales para continuar</p>
-        <form onSubmit={handleSubmit}>
-          <input type="email" placeholder="Correo electrónico" value={email} onChange={e => setEmail(e.target.value)} required disabled={loading} />
-          <input type="password" placeholder="Contraseña" value={pass} onChange={e => setPass(e.target.value)} required disabled={loading} />
-          <button type="submit" className="ag-btn ag-btn--primary ag-btn--full" disabled={loading}>{loading ? 'Ingresando...' : 'Ingresar'}</button>
-        </form>
-        {error && <motion.div className="ag-modal__error" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>{error}</motion.div>}
+
+        {!showRecovery ? (
+          <>
+            <h3>Bienvenido de vuelta</h3>
+            <p className="ag-modal__sub">Ingresa tus credenciales para acceder a tu cuenta</p>
+            
+            <form onSubmit={handleLogin}>
+              {/* Campo de Email con Float Label que se mueve FUERA */}
+              <div className="ag-float-wrapper">
+                <div className={`ag-float-content ${email ? 'ag-float-content--active' : ''}`}>
+                  <span className="ag-float-icon">📧</span>
+                  <label className="ag-float-text">Correo electrónico</label>
+                </div>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  onFocus={(e) => e.target.parentElement?.classList.add('focused')}
+                  onBlur={(e) => {
+                    if (!email) {
+                      e.target.parentElement?.classList.remove('focused');
+                    }
+                  }}
+                  className="ag-float-input"
+                  required
+                  disabled={loading}
+                />
+              </div>
+
+              {/* Campo de Contraseña con Float Label que se mueve FUERA */}
+              <div className="ag-float-wrapper">
+                <div className={`ag-float-content ${pass ? 'ag-float-content--active' : ''}`}>
+                  <span className="ag-float-icon">🔒</span>
+                  <label className="ag-float-text">Contraseña</label>
+                </div>
+                <input
+                  type="password"
+                  value={pass}
+                  onChange={(e) => setPass(e.target.value)}
+                  onFocus={(e) => e.target.parentElement?.classList.add('focused')}
+                  onBlur={(e) => {
+                    if (!pass) {
+                      e.target.parentElement?.classList.remove('focused');
+                    }
+                  }}
+                  className="ag-float-input"
+                  required
+                  disabled={loading}
+                />
+              </div>
+              
+              <div className="ag-modal__options">
+                <label className="ag-modal__checkbox">
+                  <input type="checkbox" /> Recordarme
+                </label>
+                <button type="button" className="ag-modal__forgot" onClick={() => setShowRecovery(true)}>
+                  ¿Olvidaste tu contraseña?
+                </button>
+              </div>
+
+              <button type="submit" className="ag-btn ag-btn--primary ag-btn--full" disabled={loading}>
+                {loading ? <span className="ag-modal__spinner"></span> : 'Ingresar'}
+              </button>
+            </form>
+
+            <div className="ag-modal__info">
+              <p>👨‍🌾 ¿Eres administrador? <strong>Registra nuevos empleados</strong> desde el panel de control</p>
+            </div>
+          </>
+        ) : (
+          <>
+            <h3>Recuperar contraseña</h3>
+            <p className="ag-modal__sub">Ingresa tu correo y te enviaremos instrucciones</p>
+            <form onSubmit={handleRecovery}>
+              <div className="ag-float-wrapper">
+                <div className={`ag-float-content ${recoveryEmail ? 'ag-float-content--active' : ''}`}>
+                  <span className="ag-float-icon">📧</span>
+                  <label className="ag-float-text">Tu correo electrónico</label>
+                </div>
+                <input
+                  type="email"
+                  value={recoveryEmail}
+                  onChange={(e) => setRecoveryEmail(e.target.value)}
+                  onFocus={(e) => e.target.parentElement?.classList.add('focused')}
+                  onBlur={(e) => {
+                    if (!recoveryEmail) {
+                      e.target.parentElement?.classList.remove('focused');
+                    }
+                  }}
+                  className="ag-float-input"
+                  required
+                  disabled={loading}
+                />
+              </div>
+              <button type="submit" className="ag-btn ag-btn--primary ag-btn--full" disabled={loading}>
+                {loading ? 'Enviando...' : 'Enviar instrucciones'}
+              </button>
+              <button type="button" className="ag-btn ag-btn--ghost ag-btn--full" onClick={() => { setShowRecovery(false); setRecoverySent(false); setRecoveryEmail(''); }}>
+                Volver al inicio de sesión
+              </button>
+            </form>
+            {recoverySent && <div className="ag-modal__success">✅ ¡Correo enviado! Revisa tu bandeja de entrada.</div>}
+          </>
+        )}
+
+        {error && (
+          <motion.div className="ag-modal__error" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+            {error}
+          </motion.div>
+        )}
       </motion.div>
     </motion.div>
   );
 }
-
 // ------------------------------------------------------------------
 // FOOTER
 // ------------------------------------------------------------------
