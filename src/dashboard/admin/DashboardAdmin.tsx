@@ -155,7 +155,7 @@ function ProfileModal({ usuario, onClose, onLogout }: {
       const result = reader.result as string;
       setFoto(result);
       localStorage.setItem(`agrosmart_avatar_${usuario.email}`, result);
-      setMsg({ text: 'Foto actualizada correctamente', ok: true });
+      setMsg({ text: 'Foto Actualizada Correctamente', ok: true });
     };
     reader.readAsDataURL(file);
   };
@@ -170,7 +170,7 @@ function ProfileModal({ usuario, onClose, onLogout }: {
     if (!displayName.trim()) return;
     setNombre(displayName.trim());
     localStorage.setItem(`agrosmart_nombre_${usuario.email}`, displayName.trim());
-    setMsg({ text: 'Nombre actualizado correctamente', ok: true });
+    setMsg({ text: 'Nombre Actualizado Correctamente', ok: true });
   };
 
   const savePassword = () => {
