@@ -4,14 +4,15 @@ import { motion, useScroll, useTransform, useInView, AnimatePresence } from 'fra
 import './App.css';
 import DashboardApp from './dashboard/admin/DashboardAdmin';
 import DashboardEmpleado from './dashboard/empleado/DashboardEmpleado';
-import { authService, Usuario } from './APis/authService';
+import { authService } from './APis/authService';
+import type { Usuario } from './APis/authService';
 
 // ------------------------------------------------------------------
 // ANIMATION VARIANTS
 // ------------------------------------------------------------------
 const fadeInUp = {
   hidden: { opacity: 0, y: 60 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } }
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
 };
 
 const staggerContainer = {
@@ -24,7 +25,7 @@ const staggerContainer = {
 
 const scaleIn = {
   hidden: { opacity: 0, scale: 0.8 },
-  visible: { opacity: 1, scale: 1, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } }
+  visible: { opacity: 1, scale: 1, transition: { duration: 0.7 } }
 };
 
 // ------------------------------------------------------------------
@@ -175,7 +176,7 @@ function Navbar({ sesion, onLogout, onLogin }: { sesion: Usuario | null; onLogou
       className={`ag-nav ${scrolled ? 'ag-nav--solid' : ''}`}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.6 }}
     >
       <Link to="/" className="ag-nav__logo">
         <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.8 }}>
@@ -264,7 +265,7 @@ function HeroSection() {
           className="ag-hero__title ag-hero__title--centered"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+           transition={{ duration: 1, delay: 0.4 }}
         >
           <span className="ag-hero__title-line ag-hero__title-line--highlight">AGROSMART</span>
         </motion.h1>
@@ -310,7 +311,6 @@ function HeroSection() {
 // ------------------------------------------------------------------
 function ProblemSolution() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: false, amount: 0.3 });
 
   return (
     <section id="problem-solution" ref={ref} className="ag-problem-solution">
@@ -349,8 +349,8 @@ function ProblemSolution() {
           { value: '-30%', label: 'Tiempos muertos' },
           { value: '100%', label: 'Control de inventario' },
           { value: '24/7', label: 'Monitoreo' },
-        ].map((stat, i) => (
-          <div key={stat.label} className="ag-ps-stat">
+        ].map((stat) => (
+           <div key={stat.label} className="ag-ps-stat">
             <span className="ag-ps-stat-value">{stat.value}</span>
             <span className="ag-ps-stat-label">{stat.label}</span>
           </div>

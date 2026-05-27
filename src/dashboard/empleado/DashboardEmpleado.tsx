@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, createContext, useContext, ReactElement } from 'react';
+import { useState, useRef, useEffect, createContext, useContext } from 'react';
+import type { ReactElement } from 'react';
 import '../../shared/styles/Dashboard.css';
 import MisTareas from './pages/MisTareasPage';
 import Progreso from './pages/ProgresoPage';
