@@ -1,38 +1,39 @@
 // src/hooks/useAvatar.ts
 import { useState, useEffect } from 'react';
 import { cloudinaryService } from '../APis/cloudinaryService';
-import { authService } from '../APis/authService';
 
-const cache: Record<string, string | null> = {};
+const memCache: Record<string, string | null> = {};
+
+function getGooglePicture(email: string): string | null {
+  return localStorage.getItem(`agrosmart_google_picture_${email}`);
+}
 
 export function useAvatar(email: string): string | null {
-  const [foto, setFoto] = useState<string | null>(() => {
-    // Primero revisa si tiene foto de Google (instantáneo, sin petición)
-    return authService.getGooglePicture(email) ?? cache[email] ?? null;
-  });
+  const [foto, setFoto] = useState<string | null>(null);
 
   useEffect(() => {
     if (!email) return;
 
-    // Si tiene foto de Google, úsala directamente
-    const googlePic = authService.getGooglePicture(email);
-    if (googlePic) {
-      setFoto(googlePic);
+    // 1️⃣ Google tiene SIEMPRE prioridad absoluta
+    const gPic = getGooglePicture(email);
+    if (gPic) {
+      memCache[email] = gPic;
+      setFoto(gPic);
       return;
     }
 
-    // Si ya está en caché de Cloudinary
-    if (email in cache) {
-      setFoto(cache[email]);
+    // 2️⃣ Caché en memoria (Cloudinary ya verificado)
+    if (email in memCache) {
+      setFoto(memCache[email]);
       return;
     }
 
-    // Verifica si tiene foto en Cloudinary
+    // 3️⃣ Verifica Cloudinary como fallback
     const url = cloudinaryService.getFotoUrl(email);
     const img = new Image();
-    img.onload  = () => { cache[email] = url;  setFoto(url);  };
-    img.onerror = () => { cache[email] = null; setFoto(null); };
-    img.src = `${url}?t=${Date.now()}`;
+    img.onload  = () => { memCache[email] = url;  setFoto(url);  };
+    img.onerror = () => { memCache[email] = null; setFoto(null); };
+    img.src = url;
   }, [email]);
 
   return foto;

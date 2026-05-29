@@ -104,30 +104,19 @@ const MENU = [
 ───────────────────────────────────────────────────────────── */
 function Avatar({ size = 36, className = '' }: { size?: number; className?: string }) {
   const { foto, nombre } = useProfile();
-  if (foto) {
-    return (
-      <img
-        src={foto} alt="Avatar"
-        className={className}
-        style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
-      />
-    );
-  }
+  // En el componente Avatar del Dashboard.tsx
+if (foto) {
   return (
-    <div
+    <img
+      src={foto}
+      alt="Avatar"
       className={className}
-      style={{
-        width: size, height: size, borderRadius: '50%', flexShrink: 0,
-        background: 'linear-gradient(135deg, #1B5E20, #2E7D32)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: '#fff', fontWeight: 700, fontSize: size * 0.38,
-        userSelect: 'none',
-        boxShadow: '0 2px 8px rgba(27, 94, 32, 0.25)',
-      }}
-    >
-      {nombre?.[0]?.toUpperCase() ?? '?'}
-    </div>
+      referrerPolicy="no-referrer"   // ← AGREGAR ESTO
+      style={{ width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+    />
   );
+}
 }
 
 /* ─────────────────────────────────────────────────────────────

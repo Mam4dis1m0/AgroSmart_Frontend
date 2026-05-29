@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import './App.css';
-import DashboardApp from './dashboard/admin/DashboardAdmin';
-import DashboardEmpleado from './dashboard/empleado/DashboardEmpleado';
-import { authService, Usuario } from './APis/authService';
+import DashboardApp from '../../dashboard/admin/DashboardAdmin';
+import DashboardEmpleado from '../../dashboard/empleado/DashboardEmpleado';
+import { authService, Usuario } from '../../APis/authService';
 
 /* ─── NAVBAR ─────────────────────────────────────────────── */
 function Navbar({ sesion, onLogout, onLogin }: { sesion: Usuario | null; onLogout: () => void; onLogin: () => void }) {
@@ -434,7 +434,7 @@ function AppContent() {
       )}
       {sesion?.role === 'empleado' && (
         <Route path="/empleado" element={
-          <DashboardEmpleado usuario={{ email: sesion.email, nombre: sesion.nombre, role: 'empleado', lote: 'Lote Asignado' }} onLogout={handleLogout} />
+          <DashboardEmpleado usuario={{ id: sesion.id, email: sesion.email, nombre: sesion.nombre, role: 'empleado', lote: 'Lote Asignado', fotoperfil: sesion.fotoperfil ?? null }} onLogout={handleLogout} />
         } />
       )}
       <Route path="/"        element={<WithLayout {...layoutProps}><HomePage /></WithLayout>} />

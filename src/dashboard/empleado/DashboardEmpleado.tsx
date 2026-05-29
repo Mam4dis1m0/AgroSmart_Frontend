@@ -9,10 +9,12 @@ import LotesVista from './pages/LotesVistaPage';
 
 export type RoleEmp = 'empleado';
 export interface UsuarioEmp {
+  id: number;                    // ← agregar
   email: string;
   nombre: string;
   role: RoleEmp;
   lote: string;
+  fotoperfil?: string | null;    // ← agregar
 }
 
 interface ProfileCtx {
@@ -353,9 +355,11 @@ export default function DashboardEmpleado({ usuario, onLogout }: {
 }) {
   const [pagina, setPagina] = useState('tareas');
 
-  const [foto, setFotoState]     = useState<string | null>(() =>
-    localStorage.getItem(`agrosmart_avatar_${usuario.email}`) ?? null
-  );
+  const [foto, setFotoState] = useState<string | null>(() =>
+  localStorage.getItem(`agrosmart_avatar_${usuario.email}`) 
+  ?? (usuario as any).fotoperfil 
+  ?? null
+);
   const [nombre, setNombreState] = useState<string>(() =>
     localStorage.getItem(`agrosmart_nombre_${usuario.email}`) ?? usuario.nombre
   );
