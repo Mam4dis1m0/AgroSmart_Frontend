@@ -559,7 +559,10 @@ function AuthModal({ onClose, onSuccess }: {
 
       // 3. Mete la foto dentro del objeto usuario y guarda
       const data = await res.json();
-      const usuarioConFoto = { ...data.usuario, fotoperfil: perfil.picture };
+      const usuarioConFoto = {
+  ...data.usuario,
+  fotoperfil: data.usuario.fotoperfil ?? perfil.picture ?? null,
+};
       localStorage.setItem('usuario', JSON.stringify(usuarioConFoto));
       onSuccess(usuarioConFoto);
 
