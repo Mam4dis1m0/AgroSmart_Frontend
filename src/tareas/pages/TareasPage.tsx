@@ -11,7 +11,7 @@ interface AsignacionTarea {
   idasigtarea: number; estado: string; idempleado: EmpleadoAsignado;
 }
 interface TareaBackend {
-  idtarea: number; tipoactividad: string; fechaprogramada: string;
+  idtarea: number ; tipoactividad: string; fechaprogramada: string;
   estado: string; costototal: number; esrecurrente: string;
   asignacionTareas: AsignacionTarea[];
   idadmincreador?: { idusuario: number };
@@ -22,7 +22,11 @@ interface EmpleadoLista { idusuario: number; nombre: string; }
 interface Mensaje { rol: 'user' | 'assistant'; texto: string; }
 
 /* ── HELPERS ─────────────────────────────────────────────────────────────── */
+// Reemplaza la función nombreEmpleado
 function nombreEmpleado(t: TareaBackend): string {
+  // Tarea offline con nombre guardado directamente
+  if ((t as any)._nombreEmpleado) return (t as any)._nombreEmpleado;
+
   if (!t.asignacionTareas?.length) return '—';
   const u = t.asignacionTareas[0].idempleado?.idusuario2;
   if (u) return `${u.primernombre} ${u.primerapellido}`;
@@ -207,24 +211,40 @@ function TareaCard({
   onEliminar: (id: number) => void;
   onEditar: (t: TareaBackend) => void;
 }) {
-  const colIdx = COLUMNAS.findIndex(c => c.key === colKey);
+  const colIdx   = COLUMNAS.findIndex(c => c.key === colKey);
   const canLeft  = colIdx > 0;
   const canRight = colIdx < COLUMNAS.length - 1;
   const empleado = nombreEmpleado(tarea);
-  const fecha = tarea.fechaprogramada ? tarea.fechaprogramada.split('T')[0] : null;
+  const fecha    = tarea.fechaprogramada ? tarea.fechaprogramada.split('T')[0] : null;
 
+  // FIX: detecta tareas offline (id temporal tipo "offline_123_abc")
+  // En TareaCard — reemplaza la línea de esOffline
+const esOffline = Number(tarea.idtarea) < 0 || String(tarea.idtarea).startsWith('offline_');
   return (
     <div style={{
       background: '#fff',
-      border: '1px solid #e5e7eb',
+      border: `1px solid ${esOffline ? '#fde68a' : '#e5e7eb'}`,
       borderRadius: 12,
       padding: '14px 14px 12px',
       boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
       transition: 'box-shadow .2s',
+      opacity: esOffline ? 0.85 : 1,
     }}
       onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.10)')}
       onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)')}
     >
+      {/* badge offline */}
+      {esOffline && (
+        <div style={{
+          fontSize: 10, fontWeight: 600, color: '#d97706',
+          background: '#fffbeb', border: '1px solid #fde68a',
+          borderRadius: 99, padding: '2px 8px', marginBottom: 8,
+          display: 'inline-block',
+        }}>
+          ⏳ Pendiente de sincronizar
+        </div>
+      )}
+
       {/* título */}
       <div style={{ fontSize: 13, fontWeight: 600, color: '#0f172a', marginBottom: 8, lineHeight: 1.4 }}>
         {tarea.tipoactividad ?? '—'}
@@ -257,30 +277,31 @@ function TareaCard({
         <div style={{ display: 'flex', gap: 5 }}>
           {/* mover izquierda */}
           <button
-            onClick={() => onMover(tarea.idtarea, 'left')}
-            disabled={!canLeft}
-            title="Mover a columna anterior"
+            onClick={() => !esOffline && onMover(tarea.idtarea, 'left')}
+            disabled={!canLeft || esOffline}
+            title={esOffline ? 'No disponible hasta sincronizar' : 'Mover a columna anterior'}
             style={{
               width: 28, height: 28, borderRadius: 7, border: '1px solid #e5e7eb',
-              background: canLeft ? '#f8fafc' : '#f1f5f9',
-              color: canLeft ? '#374151' : '#cbd5e1',
-              cursor: canLeft ? 'pointer' : 'not-allowed',
+              background: (canLeft && !esOffline) ? '#f8fafc' : '#f1f5f9',
+              color: (canLeft && !esOffline) ? '#374151' : '#cbd5e1',
+              cursor: (canLeft && !esOffline) ? 'pointer' : 'not-allowed',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all .15s',
             }}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M15 18l-6-6 6-6"/></svg>
           </button>
+
           {/* mover derecha */}
           <button
-            onClick={() => onMover(tarea.idtarea, 'right')}
-            disabled={!canRight}
-            title="Mover a columna siguiente"
+            onClick={() => !esOffline && onMover(tarea.idtarea, 'right')}
+            disabled={!canRight || esOffline}
+            title={esOffline ? 'No disponible hasta sincronizar' : 'Mover a columna siguiente'}
             style={{
               width: 28, height: 28, borderRadius: 7, border: '1px solid #e5e7eb',
-              background: canRight ? '#f8fafc' : '#f1f5f9',
-              color: canRight ? '#374151' : '#cbd5e1',
-              cursor: canRight ? 'pointer' : 'not-allowed',
+              background: (canRight && !esOffline) ? '#f8fafc' : '#f1f5f9',
+              color: (canRight && !esOffline) ? '#374151' : '#cbd5e1',
+              cursor: (canRight && !esOffline) ? 'pointer' : 'not-allowed',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all .15s',
             }}
@@ -292,20 +313,25 @@ function TareaCard({
         <div style={{ display: 'flex', gap: 5 }}>
           {/* editar */}
           <button
-            onClick={() => onEditar(tarea)}
-            title="Editar tarea"
+            onClick={() => !esOffline && onEditar(tarea)}
+            disabled={esOffline}
+            title={esOffline ? 'No disponible hasta sincronizar' : 'Editar tarea'}
             style={{
               width: 28, height: 28, borderRadius: 7,
-              border: '1px solid #bfdbfe', background: '#eff6ff', color: '#3b82f6',
-              cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: `1px solid ${esOffline ? '#e5e7eb' : '#bfdbfe'}`,
+              background: esOffline ? '#f8fafc' : '#eff6ff',
+              color: esOffline ? '#cbd5e1' : '#3b82f6',
+              cursor: esOffline ? 'not-allowed' : 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all .15s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background='#dbeafe'; }}
-            onMouseLeave={e => { e.currentTarget.style.background='#eff6ff'; }}
+            onMouseEnter={e => { if (!esOffline) e.currentTarget.style.background = '#dbeafe'; }}
+            onMouseLeave={e => { if (!esOffline) e.currentTarget.style.background = '#eff6ff'; }}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
-          {/* eliminar */}
+
+          {/* eliminar — sí se permite en offline para limpiar la caché */}
           <button
             onClick={() => onEliminar(tarea.idtarea)}
             title="Eliminar tarea"
@@ -315,8 +341,8 @@ function TareaCard({
               cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               transition: 'all .15s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background='#fee2e2'; }}
-            onMouseLeave={e => { e.currentTarget.style.background='#fef2f2'; }}
+            onMouseEnter={e => { e.currentTarget.style.background = '#fee2e2'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = '#fef2f2'; }}
           >
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
           </button>
@@ -355,15 +381,20 @@ export default function Tareas() {
     } catch { /* nada */ }
   }, []);
 
-  const cargarTareas = async () => {
-    try {
-      setLoading(true); setError('');
-      const res = await fetch(`${API}/api/v1/tareas`);
-      if (!res.ok) throw new Error();
-      setTareas(await res.json());
-    } catch { setError('No se pudo conectar con el servidor'); }
-    finally { setLoading(false); }
-  };
+ const cargarTareas = async () => {
+  try {
+    setLoading(true);
+    setError('');
+    const res = await fetch(`${API}/api/v1/tareas`);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    setTareas(data);
+  } catch {
+    setError('No se pudo conectar con el servidor');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const cargarEmpleados = async () => {
     try {
@@ -397,29 +428,33 @@ export default function Tareas() {
 
   /* mover tarea entre columnas */
   const moverTarea = async (id: number, dir: 'left' | 'right') => {
-    const tarea = tareas.find(t => t.idtarea === id);
-    if (!tarea) return;
-    const colActual = normalizeEstado(tarea.estado);
-    const idx = COLUMNAS.findIndex(c => c.key === colActual);
-    const nuevoIdx = dir === 'right' ? idx + 1 : idx - 1;
-    if (nuevoIdx < 0 || nuevoIdx >= COLUMNAS.length) return;
-    const nuevoEstado = COLUMNAS[nuevoIdx].key;
+  // Offline o inválido — no hace fetch
+  if (id < 0 || isNaN(id)) return;
 
-    // Optimista: actualizar UI de inmediato
-    setTareas(prev => prev.map(t => t.idtarea === id ? { ...t, estado: nuevoEstado } : t));
+  const tarea = tareas.find(t => t.idtarea === id);
+  if (!tarea) return;
 
-    try {
-      await fetch(`${API}/api/v1/tareas/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ estado: nuevoEstado }),
-      });
-    } catch {
-      // Revertir si falla
-      await cargarTareas();
-    }
-  };
+  const colActual = normalizeEstado(tarea.estado);
+  const idx = COLUMNAS.findIndex(c => c.key === colActual);
+  const nuevoIdx = dir === 'right' ? idx + 1 : idx - 1;
+  if (nuevoIdx < 0 || nuevoIdx >= COLUMNAS.length) return;
+  const nuevoEstado = COLUMNAS[nuevoIdx].key;
 
+  // Optimista
+  setTareas(prev => prev.map(t =>
+    t.idtarea === id ? { ...t, estado: nuevoEstado } : t
+  ));
+
+  try {
+    await fetch(`${API}/api/v1/tareas/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ estado: nuevoEstado }),
+    });
+  } catch {
+    await cargarTareas();
+  }
+};
   const guardar = async () => {
     if (!form.tipoactividad.trim()) return;
     try {
@@ -455,16 +490,19 @@ export default function Tareas() {
   };
 
   const abrirEditar = (t: TareaBackend) => {
-    setEditForm({
-      idtarea: t.idtarea,
-      tipoactividad: t.tipoactividad ?? '',
-      fechaprogramada: t.fechaprogramada ? t.fechaprogramada.split('T')[0] : '',
-      estado: normalizeEstado(t.estado),
-      esrecurrente: t.esrecurrente ?? 'No',
-      costototal: t.costototal != null ? String(t.costototal) : '',
-    });
-    setEditModal(true);
-  };
+  // No editar tareas offline
+  if (t.idtarea < 0) return;
+
+  setEditForm({
+    idtarea: t.idtarea,
+    tipoactividad: t.tipoactividad ?? '',
+    fechaprogramada: t.fechaprogramada ? t.fechaprogramada.split('T')[0] : '',
+    estado: normalizeEstado(t.estado),
+    esrecurrente: t.esrecurrente ?? 'No',
+    costototal: t.costototal != null ? String(t.costototal) : '',
+  });
+  setEditModal(true);
+};
 
   const guardarEdicion = async () => {
     try {
@@ -489,13 +527,25 @@ export default function Tareas() {
     } finally { setSaving(false); }
   };
 
-  const eliminar = async (id: number) => {
-    if (!confirm('¿Eliminar esta tarea?')) return;
-    try {
-      await fetch(`${API}/api/v1/tareas/${id}`, { method: 'DELETE' });
-      await cargarTareas();
-    } catch { setError('Error al eliminar'); }
-  };
+const eliminar = async (id: number) => {
+  if (!confirm('¿Eliminar esta tarea?')) return;
+
+  // Offline: id negativo o NaN
+  if (id < 0 || isNaN(id)) {
+    setTareas(prev => prev.filter(t => t.idtarea !== id));
+    return;
+  }
+
+  // Optimista
+  setTareas(prev => prev.filter(t => t.idtarea !== id));
+
+  try {
+    const res = await fetch(`${API}/api/v1/tareas/${id}`, { method: 'DELETE' });
+    if (!res.ok) await cargarTareas();
+  } catch {
+    await cargarTareas();
+  }
+};
 
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '9px 12px', border: '1.5px solid #e2e8f0',
