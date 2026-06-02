@@ -47,6 +47,16 @@ interface TareaReciente {
   nombre: string; lote: string; empleado: string; estado: string;
 }
 
+// ✅ FIX: Normaliza el estado para comparar sin importar mayúsculas/tildes
+function normalizarEstado(estado: string | null | undefined): string {
+  if (!estado) return '';
+  const s = estado.toLowerCase().trim();
+  if (s === 'en progreso' || s === 'en_progreso' || s === 'activo') return 'en_progreso';
+  if (s === 'pendiente')                                             return 'pendiente';
+  if (s === 'completado' || s === 'completada')                     return 'completado';
+  return s;
+}
+
 function useDatos() {
   const [stats, setStats]           = useState<Stats | null>(null);
   const [tareas, setTareas]         = useState<TareaReciente[]>([]);
@@ -70,33 +80,58 @@ function useDatos() {
         const empleados = resEmpleados.status === 'fulfilled' ? resEmpleados.value : [];
         const tareasRaw = resTareas.status    === 'fulfilled' ? resTareas.value    : [];
 
-        const activas    = Array.isArray(tareasRaw) ? tareasRaw.filter((t: any) => t.estado === 'en_progreso' || t.estado === 'activo').length    : 0;
-        const pendientes = Array.isArray(tareasRaw) ? tareasRaw.filter((t: any) => t.estado === 'pendiente').length   : 0;
-        const completadas= Array.isArray(tareasRaw) ? tareasRaw.filter((t: any) => t.estado === 'completada' || t.estado === 'completado').length : 0;
+        // ✅ FIX: usar normalizarEstado() para que 'En progreso', 'Pendiente', 'Completado' funcionen
+        const activas     = Array.isArray(tareasRaw) ? tareasRaw.filter((t: any) => normalizarEstado(t.estado) === 'en_progreso').length    : 0;
+        const pendientes  = Array.isArray(tareasRaw) ? tareasRaw.filter((t: any) => normalizarEstado(t.estado) === 'pendiente').length      : 0;
+        const completadas = Array.isArray(tareasRaw) ? tareasRaw.filter((t: any) => normalizarEstado(t.estado) === 'completado').length     : 0;
 
         setStats({
-          lotes:     Array.isArray(lotes)     ? lotes.length     : 0,
-          palmas:    Array.isArray(palmas)     ? palmas.length    : 0,
-          cultivos:  Array.isArray(cultivos)   ? cultivos.length  : 0,
-          empleados: Array.isArray(empleados)  ? empleados.length : 0,
+          lotes:     Array.isArray(lotes)    ? lotes.length    : 0,
+          palmas:    Array.isArray(palmas)   ? palmas.length   : 0,
+          cultivos:  Array.isArray(cultivos) ? cultivos.length : 0,
+          empleados: Array.isArray(empleados)? empleados.length: 0,
           tareasActivas:     activas,
           tareasPendientes:  pendientes,
           tareasCompletadas: completadas,
         });
 
+        // ✅ FIX: mapear usando la estructura real de la BD
+        // Estructura: tarea.tipoactividad, tarea.estado
+        //             tarea.asignacionTareas[0].idempleado.idusuario2.primernombre
+        //             tarea.idcultivo?.idlote?.nombre (muchas veces null)
         if (Array.isArray(tareasRaw) && tareasRaw.length > 0) {
-          const ultimas = tareasRaw.slice(-4).reverse().map((t: any) => ({
-            nombre:   t.nombretarea   ?? t.nombre   ?? t.titulo ?? '—',
-            lote:     t.idlote?.nombre ?? t.lote    ?? '—',
-            empleado: t.idusuario?.primernombre
-              ? `${t.idusuario.primernombre} ${t.idusuario.primerapellido ?? ''}`.trim()
-              : t.empleado ?? '—',
-            estado: t.estado ?? '—',
-          }));
+          const ultimas = [...tareasRaw]
+            .reverse()
+            .slice(0, 4)
+            .map((t: any) => {
+              // Nombre de la tarea
+              const nombre = t.tipoactividad ?? t.nombretarea ?? t.nombre ?? t.titulo ?? '—';
+
+              // Lote: viene dentro de idcultivo.idlote
+              const lote =
+                t.idcultivo?.idlote?.nombre ??
+                t.idcultivo?.nombre ??
+                t.lote ??
+                '—';
+
+              // Empleado: está en asignacionTareas[0].idempleado.idusuario2
+              let empleado = '—';
+              const asig = Array.isArray(t.asignacionTareas) ? t.asignacionTareas[0] : null;
+              if (asig) {
+                const emp2 = asig.idempleado?.idusuario2;
+                if (emp2?.primernombre) {
+                  empleado = `${emp2.primernombre} ${emp2.primerapellido ?? ''}`.trim();
+                } else if (asig.idempleado?.primernombre) {
+                  empleado = `${asig.idempleado.primernombre} ${asig.idempleado.primerapellido ?? ''}`.trim();
+                }
+              }
+
+              return { nombre, lote, empleado, estado: t.estado ?? '—' };
+            });
           setTareas(ultimas);
         }
       } catch {
-        // fallback
+        // fallback silencioso
       } finally {
         setCargando(false);
       }
@@ -235,7 +270,7 @@ export default function Inicio() {
     estChart.current = new Chart(estRef.current, {
       type: 'doughnut',
       data: {
-        labels: ['Activos', 'Pendientes', 'Completados'],
+        labels: ['En progreso', 'Pendientes', 'Completados'],
         datasets: [{
           data: [stats.tareasActivas, stats.tareasPendientes, stats.tareasCompletadas],
           backgroundColor: ['#2E7D32', '#D97706', '#1B5E20'],
@@ -260,18 +295,22 @@ export default function Inicio() {
     return () => estChart.current?.destroy();
   }, [stats]);
 
+  // ✅ FIX: badge usando el estado real de la BD (con mayúsculas)
   const estadoBadge: Record<string, string> = {
-    activo: 'badge-green',
-    en_progreso: 'badge-green',
-    pendiente: 'badge-yellow',
-    completada: 'badge-blue',
-    completado: 'badge-blue',
+    'En progreso': 'badge-green',
+    'en progreso': 'badge-green',
+    'Pendiente':   'badge-yellow',
+    'pendiente':   'badge-yellow',
+    'Completado':  'badge-blue',
+    'completado':  'badge-blue',
+    'Completada':  'badge-blue',
+    'completada':  'badge-blue',
   };
 
   const totalTareas = (stats?.tareasActivas ?? 0) + (stats?.tareasPendientes ?? 0) + (stats?.tareasCompletadas ?? 0);
-  const pctActivas    = totalTareas ? Math.round((stats!.tareasActivas     / totalTareas) * 100) : 27;
-  const pctPendientes = totalTareas ? Math.round((stats!.tareasPendientes  / totalTareas) * 100) : 11;
-  const pctCompletadas= totalTareas ? Math.round((stats!.tareasCompletadas / totalTareas) * 100) : 62;
+  const pctActivas     = totalTareas ? Math.round((stats!.tareasActivas     / totalTareas) * 100) : 0;
+  const pctPendientes  = totalTareas ? Math.round((stats!.tareasPendientes  / totalTareas) * 100) : 0;
+  const pctCompletadas = totalTareas ? Math.round((stats!.tareasCompletadas / totalTareas) * 100) : 0;
 
   const getTempClass = (temp: number) => {
     if (temp > 30) return 'hot';
@@ -372,7 +411,7 @@ export default function Inicio() {
           <div className="chart-title">Estado de tareas</div>
           <div className="chart-legend">
             {[
-              ['#2E7D32', `Activos ${pctActivas}%`],
+              ['#2E7D32', `En progreso ${pctActivas}%`],
               ['#D97706', `Pendientes ${pctPendientes}%`],
               ['#1B5E20', `Completados ${pctCompletadas}%`],
             ].map(([c, l]) => (
