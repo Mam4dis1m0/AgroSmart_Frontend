@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef, type Dispatch, type SetStateAction } from 'react';
 import './Insumos.css';
+import ModalInsumo from './ModalInsumo';
 
 const API = 'http://localhost:3000';
 
@@ -230,20 +231,28 @@ function descargarExcel(insumos: Insumo[]) {
 }
 
 /* ── INSUMOS PAGE ───────────────────────────────────────────────────────── */
-const FORM_VACIO = { nombre:'', tipo:'Fertilizante', stockactual:'', stockminimo:'', costounitario:'', unidadmedida:'kg', fechaultimaactualizacion:'' };
+const FORM_VACIO: BaseForm = { 
+  nombre: '', 
+  tipo: 'Fertilizante', 
+  stockactual: '', 
+  stockminimo: '', 
+  costounitario: '', 
+  unidadmedida: 'kg', 
+  fechaultimaactualizacion: '' 
+};
 
 export default function Insumos() {
-  const [insumos, setInsumos]     = useState<Insumo[]>([]);
-  const [loading, setLoading]     = useState(true);
-  const [filtro, setFiltro]       = useState('todos');
-  const [modal, setModal]         = useState(false);
+  const [insumos, setInsumos] = useState<Insumo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filtro, setFiltro] = useState('todos');
+  const [modal, setModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
-  const [saving, setSaving]       = useState(false);
-  const [adminId, setAdminId]     = useState<number | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [adminId, setAdminId] = useState<number | null>(null);
   const [fechaDesde, setFechaDesde] = useState('');
   const [fechaHasta, setFechaHasta] = useState('');
-  const [form, setForm]           = useState(FORM_VACIO);
-  const [editForm, setEditForm]   = useState({ ...FORM_VACIO, idinsumo: 0 });
+  const [form, setForm] = useState<BaseForm>(FORM_VACIO);
+  const [editForm, setEditForm] = useState({ ...FORM_VACIO, idinsumo: 0 });
 
   useEffect(() => {
     try {
@@ -272,7 +281,6 @@ export default function Insumos() {
 
   useEffect(() => { cargarInsumos(); }, []);
 
-  /* filtros combinados: tipo + fecha */
   const insumosFiltrados = useMemo(() => {
     return insumos.filter(i => {
       if (filtro !== 'todos' && (i.tipo ?? '').toLowerCase() !== filtro.toLowerCase()) return false;
@@ -289,64 +297,6 @@ export default function Insumos() {
   const totalValor = useMemo(() => insumos.reduce((s, i) => s + Number(i.stockactual ?? 0) * Number(i.costounitario ?? 0), 0), [insumos]);
   const bajoStock  = useMemo(() => insumos.filter(i => Number(i.stockactual ?? 0) < Number(i.stockminimo ?? 0)).length, [insumos]);
 
-  const guardar = async () => {
-    if (!form.nombre.trim()) return;
-    try {
-      setSaving(true);
-      const body: InsumoPayload = {
-        nombre: form.nombre,
-        tipo: form.tipo,
-        stockactual:   form.stockactual   ? Number(form.stockactual)   : undefined,
-        stockminimo:   form.stockminimo   ? Number(form.stockminimo)   : undefined,
-        costounitario: form.costounitario ? Number(form.costounitario) : undefined,
-        unidadmedida:  form.unidadmedida  || undefined,
-        fechaultimaactualizacion: form.fechaultimaactualizacion || undefined,
-        idadminregistro: adminId ?? undefined,
-      };
-      const res = await fetch(`${API}/api/v1/insumos`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      if (!res.ok) throw new Error('Error al guardar');
-      await cargarInsumos();
-      setModal(false);
-      setForm(FORM_VACIO);
-    } catch (e) { alert(e instanceof Error ? e.message : 'Error al guardar'); }
-    finally { setSaving(false); }
-  };
-
-  const abrirEditar = (i: Insumo) => {
-    setEditForm({
-      idinsumo: i.idinsumo,
-      nombre: i.nombre ?? '',
-      tipo: i.tipo ?? 'Fertilizante',
-      stockactual: i.stockactual != null ? String(i.stockactual) : '',
-      stockminimo: i.stockminimo != null ? String(i.stockminimo) : '',
-      costounitario: i.costounitario != null ? String(i.costounitario) : '',
-      unidadmedida: i.unidadmedida ?? 'kg',
-      fechaultimaactualizacion: i.fechaultimaactualizacion ? i.fechaultimaactualizacion.split('T')[0] : '',
-    });
-    setEditModal(true);
-  };
-
-  const guardarEdicion = async () => {
-    if (!editForm.nombre.trim()) return;
-    try {
-      setSaving(true);
-      const body: InsumoUpdatePayload = {
-        nombre: editForm.nombre,
-        tipo: editForm.tipo,
-        stockactual:   editForm.stockactual   ? Number(editForm.stockactual)   : undefined,
-        stockminimo:   editForm.stockminimo   ? Number(editForm.stockminimo)   : undefined,
-        costounitario: editForm.costounitario ? Number(editForm.costounitario) : undefined,
-        unidadmedida:  editForm.unidadmedida  || undefined,
-        fechaultimaactualizacion: editForm.fechaultimaactualizacion || undefined,
-      };
-      const res = await fetch(`${API}/api/v1/insumos/${editForm.idinsumo}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-      if (!res.ok) throw new Error('Error al actualizar');
-      await cargarInsumos();
-      setEditModal(false);
-    } catch (e) { alert(e instanceof Error ? e.message : 'Error al actualizar'); }
-    finally { setSaving(false); }
-  };
-
   const eliminar = async (id: number) => {
     if (!confirm('¿Eliminar este insumo?')) return;
     try {
@@ -355,13 +305,6 @@ export default function Insumos() {
     } catch { setInsumos(prev => prev.filter(i => i.idinsumo !== id)); }
   };
 
-  const iStyle: React.CSSProperties = {
-    width: '100%', padding: '9px 12px', border: '1.5px solid #e2e8f0',
-    borderRadius: 8, fontSize: 14, color: '#0f172a', outline: 'none',
-    fontFamily: 'inherit', boxSizing: 'border-box', background: '#fff',
-  };
-
-  /* botones de acción reutilizables */
   const BtnEditar = ({ onClick }: { onClick: () => void }) => (
     <button onClick={onClick} title="Editar" style={{
       width: 30, height: 30, borderRadius: 8,
@@ -390,53 +333,11 @@ export default function Insumos() {
     </button>
   );
 
-  /* ── FORM FIELDS compartido ── */
-  const FormFields = <T extends BaseForm>({ f, set }: { f: T; set: Dispatch<SetStateAction<T>> }) => (
-    <>
-      <input placeholder="Nombre del insumo *" value={f.nombre} onChange={e => set({...f,nombre:e.target.value})} style={iStyle} />
-      <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:10 }}>
-        <div style={{ display:'flex',flexDirection:'column',gap:4 }}>
-          <label style={{ fontSize:12,color:'#64748b',fontWeight:500 }}>Tipo</label>
-          <select value={f.tipo} onChange={e => set({...f,tipo:e.target.value})} style={{...iStyle,width:'auto'}}>
-            {TIPOS.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
-        </div>
-        <div style={{ display:'flex',flexDirection:'column',gap:4 }}>
-          <label style={{ fontSize:12,color:'#64748b',fontWeight:500 }}>Unidad de medida</label>
-          <select value={f.unidadmedida} onChange={e => set({...f,unidadmedida:e.target.value})} style={{...iStyle,width:'auto'}}>
-            <option value="kg">kg</option><option value="L">Litros (L)</option>
-            <option value="g">g</option><option value="mL">mL</option>
-            <option value="u">Unidades</option><option value="t">Toneladas</option>
-          </select>
-        </div>
-      </div>
-      <div style={{ display:'grid',gridTemplateColumns:'1fr 1fr',gap:10 }}>
-        <div style={{ display:'flex',flexDirection:'column',gap:4 }}>
-          <label style={{ fontSize:12,color:'#64748b',fontWeight:500 }}>Stock actual</label>
-          <input type="number" placeholder="0" value={f.stockactual} onChange={e => set({...f,stockactual:e.target.value})} style={{...iStyle,width:'auto'}} />
-        </div>
-        <div style={{ display:'flex',flexDirection:'column',gap:4 }}>
-          <label style={{ fontSize:12,color:'#64748b',fontWeight:500 }}>Stock mínimo</label>
-          <input type="number" placeholder="0" value={f.stockminimo} onChange={e => set({...f,stockminimo:e.target.value})} style={{...iStyle,width:'auto'}} />
-        </div>
-      </div>
-      <div style={{ display:'flex',flexDirection:'column',gap:4 }}>
-        <label style={{ fontSize:12,color:'#64748b',fontWeight:500 }}>Costo unitario</label>
-        <input type="number" placeholder="0" value={f.costounitario} onChange={e => set({...f,costounitario:e.target.value})} style={iStyle} />
-      </div>
-      <div style={{ display:'flex',flexDirection:'column',gap:4 }}>
-        <label style={{ fontSize:12,color:'#64748b',fontWeight:500 }}>Fecha última actualización</label>
-        <input type="date" value={f.fechaultimaactualizacion} onChange={e => set({...f,fechaultimaactualizacion:e.target.value})} style={iStyle} />
-      </div>
-    </>
-  );
-
   return (
     <>
       <p className="page-title">Gestión de Insumos</p>
       <p className="page-sub">Control de inventario y proveedores</p>
 
-      {/* MÉTRICAS */}
       <div className="ins-metrics">
         <div className="ins-metric-card"><div className="ins-metric-label">Total insumos</div><div className="ins-metric-val">{insumos.length}</div></div>
         <div className="ins-metric-card"><div className="ins-metric-label">Valor total</div><div className="ins-metric-val">${totalValor.toLocaleString()}</div></div>
@@ -447,7 +348,6 @@ export default function Insumos() {
         <div className="ins-metric-card"><div className="ins-metric-label">Tipos distintos</div><div className="ins-metric-val">{new Set(insumos.map(i => i.tipo).filter(Boolean)).size}</div></div>
       </div>
 
-      {/* FILTROS TIPO */}
       <div className="ins-tabs">
         {['todos', ...TIPOS].map(t => (
           <button key={t} className={`ins-tab ${filtro === t ? 'active' : ''}`} onClick={() => setFiltro(t)}>
@@ -456,7 +356,6 @@ export default function Insumos() {
         ))}
       </div>
 
-      {/* FILTRO FECHAS */}
       <div style={{ display:'flex',alignItems:'center',gap:10,marginBottom:16,flexWrap:'wrap' }}>
         <div style={{ display:'flex',alignItems:'center',gap:8,background:'#fff',border:'1px solid #e5e7eb',borderRadius:10,padding:'7px 14px' }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -475,7 +374,6 @@ export default function Insumos() {
         )}
       </div>
 
-      {/* TABLA */}
       <div className="table-card">
         <div className="table-header">
           <span>Insumos registrados ({insumosFiltrados.length})</span>
@@ -505,7 +403,7 @@ export default function Insumos() {
         ) : insumosFiltrados.length === 0 ? (
           <div style={{ textAlign:'center',padding:32,color:'#64748b' }}>No hay insumos con ese filtro</div>
         ) : (
-          <table>
+          <table className="ins-table">
             <thead>
               <tr>
                 <th>ID</th><th>Nombre</th><th>Tipo</th>
@@ -530,7 +428,19 @@ export default function Insumos() {
                     <td style={{ color:'black' }}>{i.unidadmedida ?? '—'}</td>
                     <td style={{ color:'black' }}>{i.fechaultimaactualizacion ? i.fechaultimaactualizacion.split('T')[0] : '—'}</td>
                     <td style={{ whiteSpace:'nowrap' }}>
-                      <BtnEditar onClick={() => abrirEditar(i)} />
+                      <BtnEditar onClick={() => {
+                        setEditForm({
+                          idinsumo: i.idinsumo,
+                          nombre: i.nombre ?? '',
+                          tipo: i.tipo ?? 'Fertilizante',
+                          stockactual: i.stockactual != null ? String(i.stockactual) : '',
+                          stockminimo: i.stockminimo != null ? String(i.stockminimo) : '',
+                          costounitario: i.costounitario != null ? String(i.costounitario) : '',
+                          unidadmedida: i.unidadmedida ?? 'kg',
+                          fechaultimaactualizacion: i.fechaultimaactualizacion ? i.fechaultimaactualizacion.split('T')[0] : '',
+                        });
+                        setEditModal(true);
+                      }} />
                       <BtnEliminar onClick={() => eliminar(i.idinsumo)} />
                     </td>
                   </tr>
@@ -541,39 +451,83 @@ export default function Insumos() {
         )}
       </div>
 
-      {/* MODAL — NUEVO INSUMO */}
-      {modal && (
-        <div onClick={e => e.target === e.currentTarget && setModal(false)}
-          style={{ position:'fixed',inset:0,background:'rgba(15,23,42,.5)',backdropFilter:'blur(6px)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:300,padding:'1rem' }}>
-          <div style={{ background:'#fff',borderRadius:18,padding:28,width:'100%',maxWidth:480,display:'flex',flexDirection:'column',gap:14,boxShadow:'0 12px 40px rgba(0,0,0,.15)',maxHeight:'90vh',overflowY:'auto' }}>
-            <h3 style={{ fontSize:16,fontWeight:700,color:'#0f172a',margin:0 }}>NUEVO INSUMO</h3>
-            <FormFields f={form} set={setForm} />
-            <div style={{ display:'flex',gap:10,justifyContent:'flex-end',marginTop:4 }}>
-              <button onClick={() => { setModal(false); setForm(FORM_VACIO); }} disabled={saving} style={{ padding:'9px 18px',borderRadius:8,fontSize:13,fontWeight:600,border:'1.5px solid #e2e8f0',color:'#475569',background:'transparent',cursor:'pointer',fontFamily:'inherit' }}>Cancelar</button>
-              <button onClick={guardar} disabled={saving} style={{ padding:'9px 18px',borderRadius:8,fontSize:13,fontWeight:600,background:'#16a34a',color:'#fff',border:'none',cursor:saving?'not-allowed':'pointer',opacity:saving?0.6:1,fontFamily:'inherit' }}>
-                {saving ? 'Guardando...' : 'Guardar'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ModalInsumo
+        isOpen={modal}
+        onClose={() => {
+          setModal(false);
+          setForm(FORM_VACIO);
+        }}
+        onSave={async (formData) => {
+          if (!formData.nombre.trim()) return;
+          try {
+            setSaving(true);
+            const body: InsumoPayload = {
+              nombre: formData.nombre,
+              tipo: formData.tipo,
+              stockactual: formData.stockactual ? Number(formData.stockactual) : undefined,
+              stockminimo: formData.stockminimo ? Number(formData.stockminimo) : undefined,
+              costounitario: formData.costounitario ? Number(formData.costounitario) : undefined,
+              unidadmedida: formData.unidadmedida || undefined,
+              fechaultimaactualizacion: formData.fechaultimaactualizacion || undefined,
+              idadminregistro: adminId ?? undefined,
+            };
+            const res = await fetch(`${API}/api/v1/insumos`, { 
+              method: 'POST', 
+              headers: { 'Content-Type': 'application/json' }, 
+              body: JSON.stringify(body) 
+            });
+            if (!res.ok) throw new Error('Error al guardar');
+            await cargarInsumos();
+            setModal(false);
+            setForm(FORM_VACIO);
+          } catch (e) {
+            alert(e instanceof Error ? e.message : 'Error al guardar');
+          } finally {
+            setSaving(false);
+          }
+        }}
+        titulo="NUEVO INSUMO"
+        initialData={form}
+        saving={saving}
+      />
 
-      {/* MODAL — EDITAR INSUMO */}
-      {editModal && (
-        <div onClick={e => e.target === e.currentTarget && setEditModal(false)}
-          style={{ position:'fixed',inset:0,background:'rgba(15,23,42,.5)',backdropFilter:'blur(6px)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:300,padding:'1rem' }}>
-          <div style={{ background:'#fff',borderRadius:18,padding:28,width:'100%',maxWidth:480,display:'flex',flexDirection:'column',gap:14,boxShadow:'0 12px 40px rgba(0,0,0,.15)',maxHeight:'90vh',overflowY:'auto' }}>
-            <h3 style={{ fontSize:16,fontWeight:700,color:'#0f172a',margin:0 }}>EDITAR INSUMO #{editForm.idinsumo}</h3>
-            <FormFields f={editForm} set={setEditForm} />
-            <div style={{ display:'flex',gap:10,justifyContent:'flex-end',marginTop:4 }}>
-              <button onClick={() => setEditModal(false)} disabled={saving} style={{ padding:'9px 18px',borderRadius:8,fontSize:13,fontWeight:600,border:'1.5px solid #e2e8f0',color:'#475569',background:'transparent',cursor:'pointer',fontFamily:'inherit' }}>Cancelar</button>
-              <button onClick={guardarEdicion} disabled={saving} style={{ padding:'9px 18px',borderRadius:8,fontSize:13,fontWeight:600,background:'#3b82f6',color:'#fff',border:'none',cursor:saving?'not-allowed':'pointer',opacity:saving?0.6:1,fontFamily:'inherit' }}>
-                {saving ? 'Guardando...' : 'Guardar cambios'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ModalInsumo
+        isOpen={editModal}
+        onClose={() => {
+          setEditModal(false);
+          setEditForm({ ...FORM_VACIO, idinsumo: 0 });
+        }}
+        onSave={async (formData) => {
+          if (!formData.nombre.trim()) return;
+          try {
+            setSaving(true);
+            const body: InsumoUpdatePayload = {
+              nombre: formData.nombre,
+              tipo: formData.tipo,
+              stockactual: formData.stockactual ? Number(formData.stockactual) : undefined,
+              stockminimo: formData.stockminimo ? Number(formData.stockminimo) : undefined,
+              costounitario: formData.costounitario ? Number(formData.costounitario) : undefined,
+              unidadmedida: formData.unidadmedida || undefined,
+              fechaultimaactualizacion: formData.fechaultimaactualizacion || undefined,
+            };
+            const res = await fetch(`${API}/api/v1/insumos/${editForm.idinsumo}`, { 
+              method: 'PUT', 
+              headers: { 'Content-Type': 'application/json' }, 
+              body: JSON.stringify(body) 
+            });
+            if (!res.ok) throw new Error('Error al actualizar');
+            await cargarInsumos();
+            setEditModal(false);
+          } catch (e) {
+            alert(e instanceof Error ? e.message : 'Error al actualizar');
+          } finally {
+            setSaving(false);
+          }
+        }}
+        titulo={`EDITAR INSUMO #${editForm.idinsumo}`}
+        initialData={editForm}
+        saving={saving}
+      />
 
       <AgrobotWidget />
     </>
