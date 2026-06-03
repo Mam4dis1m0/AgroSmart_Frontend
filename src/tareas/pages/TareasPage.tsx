@@ -38,6 +38,9 @@ interface Mensaje {
 
 /* ── HELPERS ─────────────────────────────────────────────────────────────── */
 function nombreEmpleado(t: TareaBackend): string {
+  // Tarea offline con nombre guardado directamente
+  if ((t as any)._nombreEmpleado) return (t as any)._nombreEmpleado;
+
   if (!t.asignacionTareas?.length) return "—";
   const u = t.asignacionTareas[0].idempleado?.idusuario2;
   if (u) return `${u.primernombre} ${u.primerapellido}`;
@@ -206,25 +209,11 @@ function AgrobotWidget() {
       `}</style>
       <button className="aw-fab" onClick={() => setAbierto((v) => !v)}>
         {abierto ? (
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#fff"
-            strokeWidth="2.5"
-          >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
             <path d="M18 6L6 18M6 6l12 12" />
           </svg>
         ) : (
-          <svg
-            width="23"
-            height="23"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#fff"
-            strokeWidth="2"
-          >
+          <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
             <path d="M12 2a9 9 0 019 9c0 3.5-2 6.5-5 8l1 3-4-2a9 9 0 01-1 0A9 9 0 013 11a9 9 0 019-9z" />
             <circle cx="8.5" cy="11" r="1" fill="#fff" />
             <circle cx="12" cy="11" r="1" fill="#fff" />
@@ -235,110 +224,39 @@ function AgrobotWidget() {
       {abierto && (
         <div className="aw-panel">
           <div className="aw-header">
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.2)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#fff"
-                strokeWidth="2"
-              >
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2">
                 <path d="M12 2a9 9 0 019 9c0 3.5-2 6.5-5 8l1 3-4-2a9 9 0 01-1 0A9 9 0 013 11a9 9 0 019-9z" />
               </svg>
             </div>
             <div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>
-                AgroBot
-              </div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.75)" }}>
-                Asistente de Tareas
-              </div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>AgroBot</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.75)" }}>Asistente de Tareas</div>
             </div>
             <div style={{ marginLeft: "auto" }}>
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  background: "#86efac",
-                }}
-              />
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#86efac" }} />
             </div>
           </div>
           <div className="aw-tabs">
-            <button
-              className={`aw-tab ${tab === "guia" ? "active" : ""}`}
-              onClick={() => setTab("guia")}
-            >
+            <button className={`aw-tab ${tab === "guia" ? "active" : ""}`} onClick={() => setTab("guia")}>
               📋 Guía rápida
             </button>
-            <button
-              className={`aw-tab ${tab === "chat" ? "active" : ""}`}
-              onClick={() => setTab("chat")}
-            >
+            <button className={`aw-tab ${tab === "chat" ? "active" : ""}`} onClick={() => setTab("chat")}>
               💬 Preguntar
             </button>
           </div>
           {tab === "guia" && (
             <div className="aw-guia-scroll">
               {GUIA_ITEMS.map((item) => (
-                <div
-                  key={item.titulo}
-                  className="aw-guia-item"
-                  style={{ background: item.bg, borderColor: item.border }}
-                >
-                  <span
-                    style={{
-                      fontSize: 18,
-                      lineHeight: 1,
-                      flexShrink: 0,
-                      marginTop: 1,
-                    }}
-                  >
-                    {item.icon}
-                  </span>
+                <div key={item.titulo} className="aw-guia-item" style={{ background: item.bg, borderColor: item.border }}>
+                  <span style={{ fontSize: 18, lineHeight: 1, flexShrink: 0, marginTop: 1 }}>{item.icon}</span>
                   <div style={{ flex: 1 }}>
-                    <div
-                      style={{
-                        fontSize: 13,
-                        fontWeight: 700,
-                        color: item.color,
-                        marginBottom: 2,
-                      }}
-                    >
-                      {item.titulo}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 12,
-                        color: "#374151",
-                        lineHeight: 1.4,
-                      }}
-                    >
-                      {item.desc}
-                    </div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: item.color, marginBottom: 2 }}>{item.titulo}</div>
+                    <div style={{ fontSize: 12, color: "#374151", lineHeight: 1.4 }}>{item.desc}</div>
                     <button
                       className="aw-guia-ask"
-                      style={{
-                        background: "transparent",
-                        color: item.color,
-                        borderColor: item.border,
-                        marginTop: 6,
-                      }}
-                      onClick={() =>
-                        enviar(`Explícame más sobre: ${item.titulo}`)
-                      }
+                      style={{ background: "transparent", color: item.color, borderColor: item.border, marginTop: 6 }}
+                      onClick={() => enviar(`Explícame más sobre: ${item.titulo}`)}
                     >
                       Saber más →
                     </button>
@@ -352,35 +270,14 @@ function AgrobotWidget() {
               <div className="aw-chat-body">
                 {mensajes.map((m, i) => (
                   <div key={i} className="aw-bubble-wrap">
-                    <div
-                      className={`aw-bubble ${m.rol === "user" ? "user" : "bot"}`}
-                    >
-                      {m.texto}
-                    </div>
+                    <div className={`aw-bubble ${m.rol === "user" ? "user" : "bot"}`}>{m.texto}</div>
                   </div>
                 ))}
                 {cargando && (
                   <div className="aw-bubble-wrap">
-                    <div
-                      className="aw-bubble bot"
-                      style={{
-                        display: "flex",
-                        gap: 4,
-                        alignItems: "center",
-                        padding: "10px 14px",
-                      }}
-                    >
+                    <div className="aw-bubble bot" style={{ display: "flex", gap: 4, alignItems: "center", padding: "10px 14px" }}>
                       {[0, 1, 2].map((i) => (
-                        <div
-                          key={i}
-                          style={{
-                            width: 6,
-                            height: 6,
-                            borderRadius: "50%",
-                            background: "#9ca3af",
-                            animation: `bounce .9s ${i * 0.15}s infinite`,
-                          }}
-                        />
+                        <div key={i} style={{ width: 6, height: 6, borderRadius: "50%", background: "#9ca3af", animation: `bounce .9s ${i * 0.15}s infinite` }} />
                       ))}
                     </div>
                   </div>
@@ -390,13 +287,7 @@ function AgrobotWidget() {
               {mensajes.length <= 1 && (
                 <div className="aw-chips">
                   {SUGERENCIAS.map((s) => (
-                    <button
-                      key={s}
-                      className="aw-chip"
-                      onClick={() => enviar(s)}
-                    >
-                      {s}
-                    </button>
+                    <button key={s} className="aw-chip" onClick={() => enviar(s)}>{s}</button>
                   ))}
                 </div>
               )}
@@ -416,14 +307,7 @@ function AgrobotWidget() {
               disabled={cargando || !input.trim()}
               style={{ background: input.trim() ? "#16a34a" : "#e5e7eb" }}
             >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#fff"
-                strokeWidth="2.5"
-              >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5">
                 <path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z" />
               </svg>
             </button>
@@ -436,30 +320,9 @@ function AgrobotWidget() {
 
 /* ── KANBAN COLUMN ───────────────────────────────────────────────────────── */
 const COLUMNAS = [
-  {
-    key: "Pendiente",
-    label: "Pendientes",
-    color: "#f59e0b",
-    bg: "#fffbeb",
-    border: "#fde68a",
-    dot: "#f59e0b",
-  },
-  {
-    key: "En progreso",
-    label: "En Proceso",
-    color: "#3b82f6",
-    bg: "#eff6ff",
-    border: "#bfdbfe",
-    dot: "#3b82f6",
-  },
-  {
-    key: "Completado",
-    label: "Completadas",
-    color: "#16a34a",
-    bg: "#f0fdf4",
-    border: "#bbf7d0",
-    dot: "#16a34a",
-  },
+  { key: "Pendiente",   label: "Pendientes",  color: "#f59e0b", bg: "#fffbeb", border: "#fde68a", dot: "#f59e0b" },
+  { key: "En progreso", label: "En Proceso",  color: "#3b82f6", bg: "#eff6ff", border: "#bfdbfe", dot: "#3b82f6" },
+  { key: "Completado",  label: "Completadas", color: "#16a34a", bg: "#f0fdf4", border: "#bbf7d0", dot: "#16a34a" },
 ] as const;
 
 type ColKey = (typeof COLUMNAS)[number]["key"];
@@ -477,71 +340,50 @@ function TareaCard({
   onEliminar: (id: number) => void;
   onEditar: (t: TareaBackend) => void;
 }) {
-  const colIdx = COLUMNAS.findIndex((c) => c.key === colKey);
-  const canLeft = colIdx > 0;
+  const colIdx   = COLUMNAS.findIndex((c) => c.key === colKey);
+  const canLeft  = colIdx > 0;
   const canRight = colIdx < COLUMNAS.length - 1;
   const empleado = nombreEmpleado(tarea);
-  const fecha = tarea.fechaprogramada
-    ? tarea.fechaprogramada.split("T")[0]
-    : null;
+  const fecha    = tarea.fechaprogramada ? tarea.fechaprogramada.split("T")[0] : null;
+
+  const esOffline = Number(tarea.idtarea) < 0 || String(tarea.idtarea).startsWith("offline_");
 
   return (
     <div
       style={{
         background: "#fff",
-        border: "1px solid #e5e7eb",
+        border: `1px solid ${esOffline ? "#fde68a" : "#e5e7eb"}`,
         borderRadius: 12,
         padding: "14px 14px 12px",
         boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
         transition: "box-shadow .2s",
+        opacity: esOffline ? 0.85 : 1,
       }}
-      onMouseEnter={(e) =>
-        (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.10)")
-      }
-      onMouseLeave={(e) =>
-        (e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.06)")
-      }
+      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.10)")}
+      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.06)")}
     >
+      {/* badge offline */}
+      {esOffline && (
+        <div style={{
+          fontSize: 10, fontWeight: 600, color: "#d97706",
+          background: "#fffbeb", border: "1px solid #fde68a",
+          borderRadius: 99, padding: "2px 8px", marginBottom: 8,
+          display: "inline-block",
+        }}>
+          ⏳ Pendiente de sincronizar
+        </div>
+      )}
+
       {/* título */}
-      <div
-        style={{
-          fontSize: 13,
-          fontWeight: 600,
-          color: "#0f172a",
-          marginBottom: 8,
-          lineHeight: 1.4,
-        }}
-      >
+      <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a", marginBottom: 8, lineHeight: 1.4 }}>
         {tarea.tipoactividad ?? "—"}
       </div>
 
       {/* meta */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 4,
-          marginBottom: 12,
-        }}
-      >
+      <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
         {empleado !== "—" && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 5,
-              fontSize: 11,
-              color: "#6b7280",
-            }}
-          >
-            <svg
-              width="11"
-              height="11"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
+          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: "#6b7280" }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
@@ -549,23 +391,8 @@ function TareaCard({
           </div>
         )}
         {fecha && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 5,
-              fontSize: 11,
-              color: "#6b7280",
-            }}
-          >
-            <svg
-              width="11"
-              height="11"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
+          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: "#6b7280" }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="4" width="18" height="18" rx="2" />
               <line x1="16" y1="2" x2="16" y2="6" />
               <line x1="8" y1="2" x2="8" y2="6" />
@@ -575,23 +402,8 @@ function TareaCard({
           </div>
         )}
         {tarea.costototal != null && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 5,
-              fontSize: 11,
-              color: "#6b7280",
-            }}
-          >
-            <svg
-              width="11"
-              height="11"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
+          <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, color: "#6b7280" }}>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="12" y1="1" x2="12" y2="23" />
               <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
             </svg>
@@ -601,72 +413,42 @@ function TareaCard({
       </div>
 
       {/* acciones */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 6,
-          justifyContent: "space-between",
-        }}
-      >
+      <div style={{ display: "flex", alignItems: "center", gap: 6, justifyContent: "space-between" }}>
         <div style={{ display: "flex", gap: 5 }}>
           {/* mover izquierda */}
           <button
-            onClick={() => onMover(tarea.idtarea, "left")}
-            disabled={!canLeft}
-            title="Mover a columna anterior"
+            onClick={() => !esOffline && onMover(tarea.idtarea, "left")}
+            disabled={!canLeft || esOffline}
+            title={esOffline ? "No disponible hasta sincronizar" : "Mover a columna anterior"}
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: 7,
-              border: "1px solid #e5e7eb",
-              background: canLeft ? "#f8fafc" : "#f1f5f9",
-              color: canLeft ? "#374151" : "#cbd5e1",
-              cursor: canLeft ? "pointer" : "not-allowed",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              width: 28, height: 28, borderRadius: 7, border: "1px solid #e5e7eb",
+              background: (canLeft && !esOffline) ? "#f8fafc" : "#f1f5f9",
+              color: (canLeft && !esOffline) ? "#374151" : "#cbd5e1",
+              cursor: (canLeft && !esOffline) ? "pointer" : "not-allowed",
+              display: "flex", alignItems: "center", justifyContent: "center",
               transition: "all .15s",
             }}
           >
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M15 18l-6-6 6-6" />
             </svg>
           </button>
+
           {/* mover derecha */}
           <button
-            onClick={() => onMover(tarea.idtarea, "right")}
-            disabled={!canRight}
-            title="Mover a columna siguiente"
+            onClick={() => !esOffline && onMover(tarea.idtarea, "right")}
+            disabled={!canRight || esOffline}
+            title={esOffline ? "No disponible hasta sincronizar" : "Mover a columna siguiente"}
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: 7,
-              border: "1px solid #e5e7eb",
-              background: canRight ? "#f8fafc" : "#f1f5f9",
-              color: canRight ? "#374151" : "#cbd5e1",
-              cursor: canRight ? "pointer" : "not-allowed",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              width: 28, height: 28, borderRadius: 7, border: "1px solid #e5e7eb",
+              background: (canRight && !esOffline) ? "#f8fafc" : "#f1f5f9",
+              color: (canRight && !esOffline) ? "#374151" : "#cbd5e1",
+              cursor: (canRight && !esOffline) ? "pointer" : "not-allowed",
+              display: "flex", alignItems: "center", justifyContent: "center",
               transition: "all .15s",
             }}
           >
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <path d="M9 18l6-6-6-6" />
             </svg>
           </button>
@@ -675,72 +457,41 @@ function TareaCard({
         <div style={{ display: "flex", gap: 5 }}>
           {/* editar */}
           <button
-            onClick={() => onEditar(tarea)}
-            title="Editar tarea"
+            onClick={() => !esOffline && onEditar(tarea)}
+            disabled={esOffline}
+            title={esOffline ? "No disponible hasta sincronizar" : "Editar tarea"}
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: 7,
-              border: "1px solid #bfdbfe",
-              background: "#eff6ff",
-              color: "#3b82f6",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              width: 28, height: 28, borderRadius: 7,
+              border: `1px solid ${esOffline ? "#e5e7eb" : "#bfdbfe"}`,
+              background: esOffline ? "#f8fafc" : "#eff6ff",
+              color: esOffline ? "#cbd5e1" : "#3b82f6",
+              cursor: esOffline ? "not-allowed" : "pointer",
+              display: "flex", alignItems: "center", justifyContent: "center",
               transition: "all .15s",
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#dbeafe";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "#eff6ff";
-            }}
+            onMouseEnter={(e) => { if (!esOffline) e.currentTarget.style.background = "#dbeafe"; }}
+            onMouseLeave={(e) => { if (!esOffline) e.currentTarget.style.background = "#eff6ff"; }}
           >
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-            >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
               <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
             </svg>
           </button>
-          {/* eliminar */}
+
+          {/* eliminar — permitido también en offline para limpiar caché */}
           <button
             onClick={() => onEliminar(tarea.idtarea)}
             title="Eliminar tarea"
             style={{
-              width: 28,
-              height: 28,
-              borderRadius: 7,
-              border: "1px solid #fecaca",
-              background: "#fef2f2",
-              color: "#ef4444",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              width: 28, height: 28, borderRadius: 7,
+              border: "1px solid #fecaca", background: "#fef2f2", color: "#ef4444",
+              cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
               transition: "all .15s",
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#fee2e2";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "#fef2f2";
-            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "#fee2e2"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "#fef2f2"; }}
           >
-            <svg
-              width="12"
-              height="12"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-            >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
               <polyline points="3 6 5 6 21 6" />
               <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6" />
               <path d="M10 11v6M14 11v6" />
@@ -767,12 +518,7 @@ export default function Tareas() {
   const [fechaHasta, setFechaHasta] = useState("");
   const [empleadoSelectSize, setEmpleadoSelectSize] = useState(1);
   const [insumos, setInsumos] = useState<
-    {
-      idinsumo: number;
-      nombre: string | null;
-      stockactual: number | null;
-      unidadmedida: string | null;
-    }[]
+    { idinsumo: number; nombre: string | null; stockactual: number | null; unidadmedida: string | null }[]
   >([]);
 
   const [form, setForm] = useState({
@@ -782,7 +528,7 @@ export default function Tareas() {
     esrecurrente: "No",
     costototal: "",
     idempleado: "",
-    insumos: [] as { idinsumo: string; cantidadusada: string }[], // ← NUEVO
+    insumos: [] as { idinsumo: string; cantidadusada: string }[],
   });
 
   const [editForm, setEditForm] = useState({
@@ -813,7 +559,8 @@ export default function Tareas() {
       setError("");
       const res = await fetch(`${API}/api/v1/tareas`);
       if (!res.ok) throw new Error();
-      setTareas(await res.json());
+      const data = await res.json();
+      setTareas(data);
     } catch {
       setError("No se pudo conectar con el servidor");
     } finally {
@@ -869,15 +616,19 @@ export default function Tareas() {
 
   /* mover tarea entre columnas */
   const moverTarea = async (id: number, dir: "left" | "right") => {
+    // Offline o inválido — no hace fetch
+    if (id < 0 || isNaN(id)) return;
+
     const tarea = tareas.find((t) => t.idtarea === id);
     if (!tarea) return;
+
     const colActual = normalizeEstado(tarea.estado);
     const idx = COLUMNAS.findIndex((c) => c.key === colActual);
     const nuevoIdx = dir === "right" ? idx + 1 : idx - 1;
     if (nuevoIdx < 0 || nuevoIdx >= COLUMNAS.length) return;
     const nuevoEstado = COLUMNAS[nuevoIdx].key;
 
-    // Optimista: actualizar UI de inmediato
+    // Optimista
     setTareas((prev) =>
       prev.map((t) => (t.idtarea === id ? { ...t, estado: nuevoEstado } : t)),
     );
@@ -889,7 +640,6 @@ export default function Tareas() {
         body: JSON.stringify({ estado: nuevoEstado }),
       });
     } catch {
-      // Revertir si falla
       await cargarTareas();
     }
   };
@@ -915,7 +665,7 @@ export default function Tareas() {
       if (!res.ok) throw new Error("Error al crear tarea");
       const nueva: TareaBackend = await res.json();
 
-      // 2. Guardar insumos PRIMERO
+      // 2. Guardar insumos primero
       for (const ins of form.insumos) {
         if (!ins.idinsumo || !ins.cantidadusada) continue;
         await fetch(`${API}/detalle-tarea`, {
@@ -929,7 +679,7 @@ export default function Tareas() {
         });
       }
 
-      // 3. Asignar empleado DESPUÉS (aquí se descuenta el stock)
+      // 3. Asignar empleado después (aquí se descuenta el stock)
       if (form.idempleado && adminId) {
         await fetch(`${API}/api/v1/tareas/${nueva.idtarea}/asignar`, {
           method: "PATCH",
@@ -962,6 +712,9 @@ export default function Tareas() {
   };
 
   const abrirEditar = (t: TareaBackend) => {
+    // No editar tareas offline
+    if (t.idtarea < 0) return;
+
     setEditForm({
       idtarea: t.idtarea,
       tipoactividad: t.tipoactividad ?? "",
@@ -985,9 +738,7 @@ export default function Tareas() {
           fechaprogramada: editForm.fechaprogramada || undefined,
           estado: editForm.estado,
           esrecurrente: editForm.esrecurrente,
-          costototal: editForm.costototal
-            ? Number(editForm.costototal)
-            : undefined,
+          costototal: editForm.costototal ? Number(editForm.costototal) : undefined,
         }),
       });
       if (!res.ok) throw new Error("Error al editar");
@@ -1003,11 +754,21 @@ export default function Tareas() {
 
   const eliminar = async (id: number) => {
     if (!confirm("¿Eliminar esta tarea?")) return;
+
+    // Offline: id negativo o NaN
+    if (id < 0 || isNaN(id)) {
+      setTareas((prev) => prev.filter((t) => t.idtarea !== id));
+      return;
+    }
+
+    // Optimista
+    setTareas((prev) => prev.filter((t) => t.idtarea !== id));
+
     try {
-      await fetch(`${API}/api/v1/tareas/${id}`, { method: "DELETE" });
-      await cargarTareas();
+      const res = await fetch(`${API}/api/v1/tareas/${id}`, { method: "DELETE" });
+      if (!res.ok) await cargarTareas();
     } catch {
-      setError("Error al eliminar");
+      await cargarTareas();
     }
   };
 
@@ -1027,132 +788,49 @@ export default function Tareas() {
   return (
     <>
       <p className="page-title">Gestión de Tareas</p>
-      <p className="page-sub">
-        Tablero Kanban — organiza y mueve tareas entre estados
-      </p>
+      <p className="page-sub">Tablero Kanban — organiza y mueve tareas entre estados</p>
       {error && (
-        <div
-          style={{
-            background: "#fef2f2",
-            color: "#ef4444",
-            padding: "10px 16px",
-            borderRadius: 8,
-            marginBottom: 16,
-            fontSize: 14,
-          }}
-        >
+        <div style={{ background: "#fef2f2", color: "#ef4444", padding: "10px 16px", borderRadius: 8, marginBottom: 16, fontSize: 14 }}>
           {error}
         </div>
       )}
+
       {/* BARRA SUPERIOR: filtros + botón nueva tarea */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "flex-end",
-          gap: 12,
-          marginBottom: 24,
-          flexWrap: "wrap",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            background: "#fff",
-            border: "1px solid #e5e7eb",
-            borderRadius: 10,
-            padding: "8px 14px",
-          }}
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#6b7280"
-            strokeWidth="2"
-          >
+      <div style={{ display: "flex", alignItems: "flex-end", gap: 12, marginBottom: 24, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 10, padding: "8px 14px" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
             <rect x="3" y="4" width="18" height="18" rx="2" />
             <line x1="16" y1="2" x2="16" y2="6" />
             <line x1="8" y1="2" x2="8" y2="6" />
             <line x1="3" y1="10" x2="21" y2="10" />
           </svg>
-          <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>
-            Desde
-          </span>
+          <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>Desde</span>
           <input
             type="date"
             value={fechaDesde}
             onChange={(e) => setFechaDesde(e.target.value)}
-            style={{
-              border: "none",
-              outline: "none",
-              fontSize: 13,
-              color: "#0f172a",
-              fontFamily: "inherit",
-              background: "transparent",
-            }}
+            style={{ border: "none", outline: "none", fontSize: 13, color: "#0f172a", fontFamily: "inherit", background: "transparent" }}
           />
         </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
-            background: "#fff",
-            border: "1px solid #e5e7eb",
-            borderRadius: 10,
-            padding: "8px 14px",
-          }}
-        >
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#6b7280"
-            strokeWidth="2"
-          >
+        <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fff", border: "1px solid #e5e7eb", borderRadius: 10, padding: "8px 14px" }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2">
             <rect x="3" y="4" width="18" height="18" rx="2" />
             <line x1="16" y1="2" x2="16" y2="6" />
             <line x1="8" y1="2" x2="8" y2="6" />
             <line x1="3" y1="10" x2="21" y2="10" />
           </svg>
-          <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>
-            Hasta
-          </span>
+          <span style={{ fontSize: 12, color: "#6b7280", fontWeight: 500 }}>Hasta</span>
           <input
             type="date"
             value={fechaHasta}
             onChange={(e) => setFechaHasta(e.target.value)}
-            style={{
-              border: "none",
-              outline: "none",
-              fontSize: 13,
-              color: "#0f172a",
-              fontFamily: "inherit",
-              background: "transparent",
-            }}
+            style={{ border: "none", outline: "none", fontSize: 13, color: "#0f172a", fontFamily: "inherit", background: "transparent" }}
           />
         </div>
         {(fechaDesde || fechaHasta) && (
           <button
-            onClick={() => {
-              setFechaDesde("");
-              setFechaHasta("");
-            }}
-            style={{
-              padding: "8px 14px",
-              borderRadius: 10,
-              border: "1px solid #fecaca",
-              background: "#fef2f2",
-              color: "#ef4444",
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: "pointer",
-              fontFamily: "inherit",
-            }}
+            onClick={() => { setFechaDesde(""); setFechaHasta(""); }}
+            style={{ padding: "8px 14px", borderRadius: 10, border: "1px solid #fecaca", background: "#fef2f2", color: "#ef4444", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}
           >
             Limpiar filtro
           </button>
@@ -1161,30 +839,14 @@ export default function Tareas() {
           <button
             onClick={() => setModal(true)}
             style={{
-              padding: "10px 20px",
-              borderRadius: 10,
-              border: "none",
-              background: "linear-gradient(135deg,#16a34a,#15803d)",
-              color: "#fff",
-              fontSize: 13,
-              fontWeight: 700,
-              cursor: "pointer",
-              fontFamily: "inherit",
+              padding: "10px 20px", borderRadius: 10, border: "none",
+              background: "linear-gradient(135deg,#16a34a,#15803d)", color: "#fff",
+              fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: "inherit",
               boxShadow: "0 2px 8px rgba(22,163,74,0.35)",
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              transition: "all .2s",
+              display: "flex", alignItems: "center", gap: 6, transition: "all .2s",
             }}
           >
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-            >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
               <line x1="12" y1="5" x2="12" y2="19" />
               <line x1="5" y1="12" x2="19" y2="12" />
             </svg>
@@ -1192,100 +854,31 @@ export default function Tareas() {
           </button>
         </div>
       </div>
+
       {/* KANBAN */}
       {loading ? (
-        <div
-          style={{
-            textAlign: "center",
-            padding: 48,
-            color: "#64748b",
-            fontSize: 14,
-          }}
-        >
+        <div style={{ textAlign: "center", padding: 48, color: "#64748b", fontSize: 14 }}>
           Cargando tareas...
         </div>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 16,
-            alignItems: "start",
-          }}
-        >
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, alignItems: "start" }}>
           {COLUMNAS.map((col) => {
             const items = porColumna(col.key);
             return (
-              <div
-                key={col.key}
-                style={{
-                  background: col.bg,
-                  border: `1.5px solid ${col.border}`,
-                  borderRadius: 14,
-                  overflow: "hidden",
-                }}
-              >
+              <div key={col.key} style={{ background: col.bg, border: `1.5px solid ${col.border}`, borderRadius: 14, overflow: "hidden" }}>
                 {/* cabecera columna */}
-                <div
-                  style={{
-                    padding: "14px 16px 12px",
-                    borderBottom: `1.5px solid ${col.border}`,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                  }}
-                >
-                  <div
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: "50%",
-                      background: col.dot,
-                    }}
-                  />
-                  <span
-                    style={{ fontSize: 13, fontWeight: 700, color: col.color }}
-                  >
-                    {col.label}
-                  </span>
-                  <span
-                    style={{
-                      marginLeft: "auto",
-                      minWidth: 22,
-                      height: 22,
-                      borderRadius: "50%",
-                      background: col.dot,
-                      color: "#fff",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: 11,
-                      fontWeight: 700,
-                    }}
-                  >
+                <div style={{ padding: "14px 16px 12px", borderBottom: `1.5px solid ${col.border}`, display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ width: 10, height: 10, borderRadius: "50%", background: col.dot }} />
+                  <span style={{ fontSize: 13, fontWeight: 700, color: col.color }}>{col.label}</span>
+                  <span style={{ marginLeft: "auto", minWidth: 22, height: 22, borderRadius: "50%", background: col.dot, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700 }}>
                     {items.length}
                   </span>
                 </div>
 
                 {/* tarjetas */}
-                <div
-                  style={{
-                    padding: 10,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 8,
-                    minHeight: 120,
-                  }}
-                >
+                <div style={{ padding: 10, display: "flex", flexDirection: "column", gap: 8, minHeight: 120 }}>
                   {items.length === 0 ? (
-                    <div
-                      style={{
-                        textAlign: "center",
-                        padding: "24px 0",
-                        color: "#9ca3af",
-                        fontSize: 12,
-                      }}
-                    >
+                    <div style={{ textAlign: "center", padding: "24px 0", color: "#9ca3af", fontSize: 12 }}>
                       Sin tareas
                     </div>
                   ) : (
@@ -1306,85 +899,34 @@ export default function Tareas() {
           })}
         </div>
       )}
+
       {/* MODAL — NUEVA TAREA */}
       {modal && (
         <div
           onClick={(e) => e.target === e.currentTarget && setModal(false)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15,23,42,.5)",
-            backdropFilter: "blur(6px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 300,
-            padding: "1rem",
-          }}
+          style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,.5)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 300, padding: "1rem" }}
         >
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: 18,
-              padding: 28,
-              width: "100%",
-              maxWidth: 460,
-              display: "flex",
-              flexDirection: "column",
-              gap: 14,
-              boxShadow: "0 12px 40px rgba(0,0,0,.15)",
-              maxHeight: "90vh",
-              overflowY: "auto",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: 16,
-                fontWeight: 700,
-                color: "#0f172a",
-                margin: 0,
-              }}
-            >
-              NUEVA TAREA
-            </h3>
+          <div style={{ background: "#fff", borderRadius: 18, padding: 28, width: "100%", maxWidth: 460, display: "flex", flexDirection: "column", gap: 14, boxShadow: "0 12px 40px rgba(0,0,0,.15)", maxHeight: "90vh", overflowY: "auto" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", margin: 0 }}>NUEVA TAREA</h3>
 
             <input
               placeholder="Tipo de actividad *"
               value={form.tipoactividad}
-              onChange={(e) =>
-                setForm({ ...form, tipoactividad: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, tipoactividad: e.target.value })}
               style={{ ...inputStyle, width: "100%" }}
             />
 
-            {/* SECCIÓN: Fecha y Estado */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                gap: 10,
-              }}
-            >
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <label style={{ fontSize: 12, color: "#64748b" }}>
-                  Fecha programada
-                </label>
+                <label style={{ fontSize: 12, color: "#64748b" }}>Fecha programada</label>
                 <input
                   type="date"
                   value={form.fechaprogramada}
-                  onChange={(e) =>
-                    setForm({ ...form, fechaprogramada: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, fechaprogramada: e.target.value })}
                   style={{ ...inputStyle, width: "100%" }}
                 />
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
-                }}
-              >
+              <div style={{ display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
                 <select
                   value={form.estado}
                   onChange={(e) => setForm({ ...form, estado: e.target.value })}
@@ -1397,28 +939,17 @@ export default function Tareas() {
               </div>
             </div>
 
-            {/* SECCIÓN: Costo y Recurrencia */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                gap: 10,
-              }}
-            >
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: 10 }}>
               <input
                 placeholder="Costo total"
                 type="number"
                 value={form.costototal}
-                onChange={(e) =>
-                  setForm({ ...form, costototal: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, costototal: e.target.value })}
                 style={{ ...inputStyle, width: "100%" }}
               />
               <select
                 value={form.esrecurrente}
-                onChange={(e) =>
-                  setForm({ ...form, esrecurrente: e.target.value })
-                }
+                onChange={(e) => setForm({ ...form, esrecurrente: e.target.value })}
                 style={{ ...inputStyle, width: "100%" }}
               >
                 <option value="No">No recurrente</option>
@@ -1426,96 +957,48 @@ export default function Tareas() {
               </select>
             </div>
 
-            {/* SECCIÓN: Selector de Empleados (Con el mismo estilo exacto) */}
+            {/* Selector de Empleados */}
             <div style={{ position: "relative", width: "100%" }}>
               <select
                 value={form.idempleado}
-                onChange={(e) => {
-                  setForm({ ...form, idempleado: e.target.value });
-                  setEmpleadoSelectSize(1);
-                }}
+                onChange={(e) => { setForm({ ...form, idempleado: e.target.value }); setEmpleadoSelectSize(1); }}
                 onFocus={() => setEmpleadoSelectSize(5)}
                 onBlur={() => setEmpleadoSelectSize(1)}
                 size={empleadoSelectSize}
                 style={{
-                  ...inputStyle, // Hereda la altura, bordes y padding original de tus inputs
+                  ...inputStyle,
                   width: "100%",
                   position: empleadoSelectSize > 1 ? "absolute" : "relative",
                   zIndex: 400,
                   background: "#fff",
-                  height:
-                    empleadoSelectSize > 1
-                      ? "auto"
-                      : inputStyle.height || "40px", // Mantiene el tamaño nativo al abrirse
+                  height: empleadoSelectSize > 1 ? "auto" : (inputStyle.height || "40px"),
                 }}
               >
                 <option value="">— Asignar empleado (opcional) —</option>
                 {empleados.map((emp) => (
-                  <option
-                    key={emp.idusuario}
-                    value={emp.idusuario}
-                    style={{ padding: "6px 10px" }}
-                  >
+                  <option key={emp.idusuario} value={emp.idusuario} style={{ padding: "6px 10px" }}>
                     {emp.nombre}
                   </option>
                 ))}
               </select>
-              {/* Deja el espacio exacto abajo para que no se altere el flujo visual de los insumos */}
-              {empleadoSelectSize > 1 && (
-                <div style={{ height: inputStyle.height || 40 }} />
-              )}
+              {empleadoSelectSize > 1 && <div style={{ height: inputStyle.height || 40 }} />}
             </div>
 
-            {/* ── INSUMOS ───────────────────────────────────────────────────── */}
+            {/* INSUMOS */}
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <label
-                  style={{ fontSize: 13, fontWeight: 600, color: "#0f172a" }}
-                >
-                  Insumos utilizados
-                </label>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <label style={{ fontSize: 13, fontWeight: 600, color: "#0f172a" }}>Insumos utilizados</label>
                 <button
                   type="button"
-                  onClick={() =>
-                    setForm({
-                      ...form,
-                      insumos: [
-                        ...form.insumos,
-                        { idinsumo: "", cantidadusada: "" },
-                      ],
-                    })
-                  }
-                  style={{
-                    fontSize: 12,
-                    fontWeight: 600,
-                    color: "#16a34a",
-                    background: "transparent",
-                    border: "1.5px solid #16a34a",
-                    borderRadius: 6,
-                    padding: "4px 10px",
-                    cursor: "pointer",
-                  }}
+                  onClick={() => setForm({ ...form, insumos: [...form.insumos, { idinsumo: "", cantidadusada: "" }] })}
+                  style={{ fontSize: 12, fontWeight: 600, color: "#16a34a", background: "transparent", border: "1.5px solid #16a34a", borderRadius: 6, padding: "4px 10px", cursor: "pointer" }}
                 >
                   + Agregar insumo
                 </button>
               </div>
 
               {form.insumos.map((ins, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "minmax(0, 1.5fr) minmax(0, 1fr) auto",
-                    gap: 8,
-                    alignItems: "center",
-                  }}
-                >
+                <div key={i} style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.5fr) minmax(0, 1fr) auto", gap: 8, alignItems: "center" }}>
                   <select
                     value={ins.idinsumo}
                     onChange={(e) => {
@@ -1523,22 +1006,12 @@ export default function Tareas() {
                       updated[i] = { ...updated[i], idinsumo: e.target.value };
                       setForm({ ...form, insumos: updated });
                     }}
-                    style={{
-                      ...inputStyle,
-                      width: "100%",
-                      textOverflow: "ellipsis",
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                    }}
+                    style={{ ...inputStyle, width: "100%", textOverflow: "ellipsis", whiteSpace: "nowrap", overflow: "hidden" }}
                   >
                     <option value="">— Insumo —</option>
                     {insumos.map((insumoItem) => (
-                      <option
-                        key={insumoItem.idinsumo}
-                        value={insumoItem.idinsumo}
-                      >
-                        {insumoItem.nombre} ({insumoItem.stockactual}{" "}
-                        {insumoItem.unidadmedida})
+                      <option key={insumoItem.idinsumo} value={insumoItem.idinsumo}>
+                        {insumoItem.nombre} ({insumoItem.stockactual} {insumoItem.unidadmedida})
                       </option>
                     ))}
                   </select>
@@ -1549,10 +1022,7 @@ export default function Tareas() {
                     value={ins.cantidadusada}
                     onChange={(e) => {
                       const updated = [...form.insumos];
-                      updated[i] = {
-                        ...updated[i],
-                        cantidadusada: e.target.value,
-                      };
+                      updated[i] = { ...updated[i], cantidadusada: e.target.value };
                       setForm({ ...form, insumos: updated });
                     }}
                     style={{ ...inputStyle, width: "100%" }}
@@ -1560,52 +1030,21 @@ export default function Tareas() {
 
                   <button
                     type="button"
-                    onClick={() =>
-                      setForm({
-                        ...form,
-                        insumos: form.insumos.filter((_, j) => j !== i),
-                      })
-                    }
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      color: "#ef4444",
-                      fontSize: 18,
-                      cursor: "pointer",
-                      lineHeight: 1,
-                      padding: "0 4px",
-                    }}
+                    onClick={() => setForm({ ...form, insumos: form.insumos.filter((_, j) => j !== i) })}
+                    style={{ background: "transparent", border: "none", color: "#ef4444", fontSize: 18, cursor: "pointer", lineHeight: 1, padding: "0 4px" }}
                   >
                     ×
                   </button>
                 </div>
               ))}
             </div>
-            {/* ─────────────────────────────────────────────────────────────── */}
 
-            <div
-              style={{
-                display: "flex",
-                gap: 10,
-                justifyContent: "flex-end",
-                marginTop: 10,
-              }}
-            >
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 10 }}>
               <button
                 type="button"
                 onClick={() => setModal(false)}
                 disabled={saving}
-                style={{
-                  padding: "9px 18px",
-                  borderRadius: 8,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  border: "1.5px solid #e2e8f0",
-                  color: "#475569",
-                  background: "transparent",
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                }}
+                style={{ padding: "9px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600, border: "1.5px solid #e2e8f0", color: "#475569", background: "transparent", cursor: "pointer", fontFamily: "inherit" }}
               >
                 Cancelar
               </button>
@@ -1613,18 +1052,7 @@ export default function Tareas() {
                 type="button"
                 onClick={guardar}
                 disabled={saving}
-                style={{
-                  padding: "9px 18px",
-                  borderRadius: 8,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  background: "#16a34a",
-                  color: "#fff",
-                  border: "none",
-                  cursor: saving ? "not-allowed" : "pointer",
-                  opacity: saving ? 0.6 : 1,
-                  fontFamily: "inherit",
-                }}
+                style={{ padding: "9px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600, background: "#16a34a", color: "#fff", border: "none", cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.6 : 1, fontFamily: "inherit" }}
               >
                 {saving ? "Guardando..." : "Guardar"}
               </button>
@@ -1632,81 +1060,36 @@ export default function Tareas() {
           </div>
         </div>
       )}
+
       {/* MODAL — EDITAR TAREA */}
       {editModal && (
         <div
           onClick={(e) => e.target === e.currentTarget && setEditModal(false)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(15,23,42,.5)",
-            backdropFilter: "blur(6px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 300,
-            padding: "1rem",
-          }}
+          style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,.5)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 300, padding: "1rem" }}
         >
-          <div
-            style={{
-              background: "#fff",
-              borderRadius: 18,
-              padding: 28,
-              width: "100%",
-              maxWidth: 460,
-              display: "flex",
-              flexDirection: "column",
-              gap: 14,
-              boxShadow: "0 12px 40px rgba(0,0,0,.15)",
-            }}
-          >
-            <h3
-              style={{
-                fontSize: 16,
-                fontWeight: 700,
-                color: "#0f172a",
-                margin: 0,
-              }}
-            >
+          <div style={{ background: "#fff", borderRadius: 18, padding: 28, width: "100%", maxWidth: 460, display: "flex", flexDirection: "column", gap: 14, boxShadow: "0 12px 40px rgba(0,0,0,.15)" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", margin: 0 }}>
               EDITAR TAREA #{editForm.idtarea}
             </h3>
             <input
               placeholder="Tipo de actividad *"
               value={editForm.tipoactividad}
-              onChange={(e) =>
-                setEditForm({ ...editForm, tipoactividad: e.target.value })
-              }
+              onChange={(e) => setEditForm({ ...editForm, tipoactividad: e.target.value })}
               style={inputStyle}
             />
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 10,
-              }}
-            >
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <label style={{ fontSize: 12, color: "#64748b" }}>
-                  Fecha programada
-                </label>
+                <label style={{ fontSize: 12, color: "#64748b" }}>Fecha programada</label>
                 <input
                   type="date"
                   value={editForm.fechaprogramada}
-                  onChange={(e) =>
-                    setEditForm({
-                      ...editForm,
-                      fechaprogramada: e.target.value,
-                    })
-                  }
+                  onChange={(e) => setEditForm({ ...editForm, fechaprogramada: e.target.value })}
                   style={{ ...inputStyle, width: "auto" }}
                 />
               </div>
               <select
                 value={editForm.estado}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, estado: e.target.value })
-                }
+                onChange={(e) => setEditForm({ ...editForm, estado: e.target.value })}
                 style={{ ...inputStyle, width: "auto" }}
               >
                 {["Pendiente", "En progreso", "Completado"].map((s) => (
@@ -1714,73 +1097,35 @@ export default function Tareas() {
                 ))}
               </select>
             </div>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 10,
-              }}
-            >
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               <input
                 placeholder="Costo total"
                 type="number"
                 value={editForm.costototal}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, costototal: e.target.value })
-                }
+                onChange={(e) => setEditForm({ ...editForm, costototal: e.target.value })}
                 style={{ ...inputStyle, width: "auto" }}
               />
               <select
                 value={editForm.esrecurrente}
-                onChange={(e) =>
-                  setEditForm({ ...editForm, esrecurrente: e.target.value })
-                }
+                onChange={(e) => setEditForm({ ...editForm, esrecurrente: e.target.value })}
                 style={{ ...inputStyle, width: "auto" }}
               >
                 <option value="No">No recurrente</option>
                 <option value="Si">Recurrente</option>
               </select>
             </div>
-            <div
-              style={{
-                display: "flex",
-                gap: 10,
-                justifyContent: "flex-end",
-                marginTop: 4,
-              }}
-            >
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
               <button
                 onClick={() => setEditModal(false)}
                 disabled={saving}
-                style={{
-                  padding: "9px 18px",
-                  borderRadius: 8,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  border: "1.5px solid #e2e8f0",
-                  color: "#475569",
-                  background: "transparent",
-                  cursor: "pointer",
-                  fontFamily: "inherit",
-                }}
+                style={{ padding: "9px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600, border: "1.5px solid #e2e8f0", color: "#475569", background: "transparent", cursor: "pointer", fontFamily: "inherit" }}
               >
                 Cancelar
               </button>
               <button
                 onClick={guardarEdicion}
                 disabled={saving}
-                style={{
-                  padding: "9px 18px",
-                  borderRadius: 8,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  background: "#3b82f6",
-                  color: "#fff",
-                  border: "none",
-                  cursor: saving ? "not-allowed" : "pointer",
-                  opacity: saving ? 0.6 : 1,
-                  fontFamily: "inherit",
-                }}
+                style={{ padding: "9px 18px", borderRadius: 8, fontSize: 13, fontWeight: 600, background: "#3b82f6", color: "#fff", border: "none", cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.6 : 1, fontFamily: "inherit" }}
               >
                 {saving ? "Guardando..." : "Guardar cambios"}
               </button>

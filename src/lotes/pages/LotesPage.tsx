@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import ApisSatelital from '../pages/ApisSatelital';
+import ApisSatelital from './ApisSatelital';
 
 const API = 'http://localhost:3000';
 
