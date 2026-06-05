@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import type { UsuarioEmp } from "../DashboardEmpleado";
 
-const API = "http://localhost:3000";
+const API = window.location.hostname === "localhost"
+  ? "http://localhost:3000"
+  : `http://${window.location.hostname}:3000`;
 
 type Estado = "Pendiente" | "En progreso" | "Completado";
 

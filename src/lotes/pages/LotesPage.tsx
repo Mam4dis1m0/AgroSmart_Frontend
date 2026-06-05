@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import ApisSatelital from './ApisSatelital';
 
-const API = 'http://localhost:3000';
+const API = window.location.hostname === "localhost"
+  ? "http://localhost:3000"
+  : `http://${window.location.hostname}:3000`;
 
 interface LoteBackend {
   idlote: number;

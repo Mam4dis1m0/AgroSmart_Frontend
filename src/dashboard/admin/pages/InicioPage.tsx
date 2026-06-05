@@ -3,7 +3,9 @@ import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 import './InicioPage.css';
 
-const API = 'http://localhost:3000';
+const API = window.location.hostname === "localhost"
+  ? "http://localhost:3000"
+  : `http://${window.location.hostname}:3000`;
 
 /* ── CLIMA ── */
 interface Clima {

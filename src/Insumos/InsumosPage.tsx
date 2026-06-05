@@ -2,7 +2,9 @@ import { useState, useMemo, useEffect, useRef, type Dispatch, type SetStateActio
 import './Insumos.css';
 import ModalInsumo from './ModalInsumo';
 
-const API = 'http://localhost:3000';
+const API = window.location.hostname === "localhost"
+  ? "http://localhost:3000"
+  : `http://${window.location.hostname}:3000`;
 
 interface Insumo {
   idinsumo: number;
