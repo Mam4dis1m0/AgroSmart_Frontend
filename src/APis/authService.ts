@@ -1,5 +1,5 @@
 // src/APis/authService.ts
-const API_URL = 'http://localhost:3000';
+import { API_BASE_URL as API_URL } from './apiUrl';
 
 export interface Usuario {
   id: number;
@@ -41,7 +41,7 @@ async loginConGoogle(accessToken: string): Promise<{ usuario: Usuario; picture: 
     headers: { Authorization: `Bearer ${accessToken}` },
   }).then(r => r.json());
 
-  const res = await fetch(`http://localhost:3000/usuarios/login-google`, {
+  const res = await fetch(`${API_URL}/usuarios/login-google`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email: perfil.email }),
@@ -83,7 +83,7 @@ async loginConGoogle(accessToken: string): Promise<{ usuario: Usuario; picture: 
   }
 
   try {
-    await fetch(`http://localhost:3000/usuarios/${data.usuario.id}/nombre`, {
+    await fetch(`${API_URL}/usuarios/${data.usuario.id}/nombre`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nombremostrar: perfil.name }),

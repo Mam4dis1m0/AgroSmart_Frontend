@@ -8,9 +8,7 @@ import { authService } from './APis/authService';
 import type { Usuario } from './APis/authService';
 
 const GOOGLE_CLIENT_ID = '462119883500-eel5ge8mfnjd19gkubfiqsbokfljoph0.apps.googleusercontent.com';
-const API = window.location.hostname === "localhost"
-  ? "http://localhost:3000"
-  : `http://${window.location.hostname}:3000`;
+import { API_BASE_URL as API } from './APis/apiUrl';
 import { useGoogleLogin } from '@react-oauth/google';
 // ------------------------------------------------------------------
 // ANIMATION VARIANTS

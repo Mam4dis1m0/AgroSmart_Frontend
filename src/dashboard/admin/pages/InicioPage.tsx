@@ -2,10 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 import './InicioPage.css';
-
-const API = window.location.hostname === "localhost"
-  ? "http://localhost:3000"
-  : `http://${window.location.hostname}:3000`;
+import { API_BASE_URL as API } from '../../../APis/apiUrl';
 
 /* ── CLIMA ── */
 interface Clima {

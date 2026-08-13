@@ -1,8 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-
-const API = window.location.hostname === "localhost"
-  ? "http://localhost:3000"
-  : `http://${window.location.hostname}:3000`;
+import { API_BASE_URL as API } from '../../APis/apiUrl';
 const CACHE_KEY   = 'agrosmart_empleados_cache';
 const PENDING_KEY = 'agrosmart_empleados_pending';
 
