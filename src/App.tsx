@@ -628,7 +628,7 @@ function AuthModal({ onClose, onSuccess }: {
           {vista === 'login' && (
             <motion.div key="login" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }}>
               <h3>Bienvenido de vuelta</h3>
-              <p className="ag-modal__sub">Ingresa tus credenciales para continuar</p>
+              <p className="ag-modal__sub">Ingresa tus credenciales para continuarr</p>
 
               {/* Botón Google */}
               <button
