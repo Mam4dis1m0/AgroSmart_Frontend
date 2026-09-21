@@ -6,9 +6,12 @@ import DashboardApp from './dashboard/admin/DashboardAdmin';
 import DashboardEmpleado from './dashboard/empleado/DashboardEmpleado';
 import { authService } from './APis/authService';
 import type { Usuario } from './APis/authService';
+import { useContentsquarePageview } from './hooks/useContentsquarePageview';
 
 const GOOGLE_CLIENT_ID = '462119883500-eel5ge8mfnjd19gkubfiqsbokfljoph0.apps.googleusercontent.com';
-import { API_BASE_URL as API } from './APis/apiUrl';
+const API = window.location.hostname === "localhost"
+  ? "http://localhost:3000"
+  : `http://${window.location.hostname}:3000`;
 import { useGoogleLogin } from '@react-oauth/google';
 // ------------------------------------------------------------------
 // ANIMATION VARIANTS
@@ -628,7 +631,7 @@ function AuthModal({ onClose, onSuccess }: {
           {vista === 'login' && (
             <motion.div key="login" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} transition={{ duration: 0.2 }}>
               <h3>Bienvenido de vuelta</h3>
-              <p className="ag-modal__sub">Ingresa tus credenciales para continuarr</p>
+              <p className="ag-modal__sub">Ingresa tus credenciales para continuar</p>
 
               {/* Botón Google */}
               <button
@@ -896,6 +899,7 @@ function WithLayout({ children, sesion, onLogout, onLogin, modal, onClose, onSuc
 // APP CONTENT
 // ------------------------------------------------------------------
 function AppContent() {
+  useContentsquarePageview(); // ← agrega esta línea
   const [modal, setModal] = useState(false);
   const [sesion, setSesion] = useState<Usuario | null>(null);
   const [loading, setLoading] = useState(true);
